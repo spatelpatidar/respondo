@@ -1,0 +1,16 @@
+# Tell GitHub Linguist what to count as the primary language
+# and what to ignore for language detection stats
+
+# Treat all Ruby files as Ruby (explicit, good practice)
+*.rb linguist-language=Ruby
+
+# Documentation — exclude from language stats
+*.md linguist-documentation=true
+
+# Spec/test files — mark as generated/vendored so they don't skew stats
+spec/**/*.rb linguist-detectable=false
+
+# Gemfile and gemspec are Ruby but sometimes misdetected
+Gemfile    linguist-language=Ruby
+*.gemspec  linguist-language=Ruby
+Rakefile   linguist-language=Ruby
