@@ -41,14 +41,18 @@ module Respondo
 
     # @return [Hash] the complete response payload
     def build
+      # We initialize the hash in the exact order we want keys to appear
       payload = {
         success: @success,
         message: resolve_message,
         data:    serialize_data,
-        meta:    build_meta
       }
 
+      # Add errors before meta if they exist
       payload[:errors] = @errors if @errors && !@errors.empty?
+
+      # Finally, add meta so it appears at the bottom
+      payload[:meta] = build_meta
 
       apply_camelize(payload)
     end

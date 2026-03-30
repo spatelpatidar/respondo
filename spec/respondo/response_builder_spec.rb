@@ -154,4 +154,36 @@ RSpec.describe Respondo::ResponseBuilder do
       expect(result[:data]).to have_key(:lastName)
     end
   end
+
+
+  # --- pagination: false ----------------------------------------------------
+
+  describe "pagination: false" do
+    let(:paginated) do
+      double("Kaminari",
+        current_page: 2, limit_value: 5, total_pages: 4,
+        total_count: 20, next_page: 3, prev_page: 1
+      )
+    end
+
+    it "suppresses pagination meta when pagination: false" do
+      result = build(success: true, data: paginated, pagination: false)
+      expect(result[:meta]).not_to have_key(:pagination)
+    end
+
+    it "includes pagination meta when pagination: true (default)" do
+      result = build(success: true, data: paginated, pagination: true)
+      expect(result[:meta]).to have_key(:pagination)
+    end
+
+    it "includes pagination meta when pagination: not specified (defaults to true)" do
+      result = build(success: true, data: paginated)
+      expect(result[:meta]).to have_key(:pagination)
+    end
+
+    it "pagination: false on a plain array is a no-op (no error raised)" do
+      result = build(success: true, data: [1, 2, 3], pagination: false)
+      expect(result[:meta]).not_to have_key(:pagination)
+    end
+  end
 end
