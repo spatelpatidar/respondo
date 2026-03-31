@@ -1,5 +1,8 @@
 # Respondo 🎯
 
+[![Gem Version](https://badge.fury.io/rb/respondo.svg?icon=si%3Arubygems&icon_color=%23ce0303)](https://badge.fury.io/rb/respondo)
+![GitHub Repo Views](https://gitviews.com/repo/spatelpatidar/respondo.svg)
+
 Smart JSON API response formatter for Rails — consistent structure every time, across every app.
 
 ```json
