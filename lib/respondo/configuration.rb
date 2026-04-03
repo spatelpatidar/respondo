@@ -29,12 +29,18 @@ module Respondo
     #   config.serializer = ->(obj) { SomeSerializer.new(obj).as_json }
     attr_accessor :serializer
 
+    # Static key-value pairs merged into every response's meta block.
+    # @example
+    #   config.default_meta = { api_version: "v1", platform: "mobile" }
+    attr_accessor :default_meta
+
     def initialize
       @default_success_message = "Success"
       @default_error_message   = "An error occurred"
       @include_request_id      = false
       @camelize_keys           = false
       @serializer              = nil
+      @default_meta            = {}  # e.g. { api_version: "v1", env: "production" }
     end
   end
 end

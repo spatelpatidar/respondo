@@ -114,78 +114,78 @@ module Respondo
     # =========================================================================
 
     # 400 Bad Request — malformed request, invalid params
-    def render_bad_request(message: "Bad request", errors: nil, code: "BAD_REQUEST")
-      render_error(message: message, errors: errors, code: code, status: :bad_request)
+    def render_bad_request(message: "Bad request", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 400, status: :bad_request)
     end
 
     # 401 Unauthorized — not authenticated
-    def render_unauthorized(message: "Unauthorized", errors: nil, code: "UNAUTHORIZED")
-      render_error(message: message, errors: errors, code: code, status: :unauthorized)
+    def render_unauthorized(message: "Unauthorized", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 401, status: :unauthorized)
     end
 
     # 402 Payment Required — paywalled features
-    def render_payment_required(message: "Payment required to access this resource", errors: nil, code: "PAYMENT_REQUIRED")
-      render_error(message: message, errors: errors, code: code, status: :payment_required)
+    def render_payment_required(message: "Payment required to access this resource", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 402, status: :payment_required)
     end
 
     # 403 Forbidden — authenticated but not authorized
-    def render_forbidden(message: "You do not have permission to perform this action", errors: nil, code: "FORBIDDEN")
-      render_error(message: message, errors: errors, code: code, status: :forbidden)
+    def render_forbidden(message: "You do not have permission to perform this action", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 403, status: :forbidden)
     end
 
     # 404 Not Found
-    def render_not_found(message: "Resource not found", errors: nil, code: "NOT_FOUND")
-      render_error(message: message, errors: errors, code: code, status: :not_found)
+    def render_not_found(message: "Resource not found", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 404, status: :not_found)
     end
 
     # 405 Method Not Allowed
-    def render_method_not_allowed(message: "HTTP method not allowed", errors: nil, code: "METHOD_NOT_ALLOWED")
-      render_error(message: message, errors: errors, code: code, status: :method_not_allowed)
+    def render_method_not_allowed(message: "HTTP method not allowed", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 405, status: :method_not_allowed)
     end
 
     # 406 Not Acceptable — client Accept header can't be satisfied
-    def render_not_acceptable(message: "Requested format not acceptable", errors: nil, code: "NOT_ACCEPTABLE")
-      render_error(message: message, errors: errors, code: code, status: :not_acceptable)
+    def render_not_acceptable(message: "Requested format not acceptable", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 406, status: :not_acceptable)
     end
 
     # 408 Request Timeout
-    def render_request_timeout(message: "Request timed out", errors: nil, code: "REQUEST_TIMEOUT")
-      render_error(message: message, errors: errors, code: code, status: :request_timeout)
+    def render_request_timeout(message: "Request timed out", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 408, status: :request_timeout)
     end
 
     # 409 Conflict — duplicate record, state conflict
-    def render_conflict(message: "Resource conflict", errors: nil, code: "CONFLICT")
-      render_error(message: message, errors: errors, code: code, status: :conflict)
+    def render_conflict(message: "Resource conflict", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 409, status: :conflict)
     end
 
     # 410 Gone — resource permanently deleted
-    def render_gone(message: "Resource no longer available", errors: nil, code: "GONE")
-      render_error(message: message, errors: errors, code: code, status: :gone)
+    def render_gone(message: "Resource no longer available", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 410, status: :gone)
     end
 
     # 412 Precondition Failed — conditional request failed
-    def render_precondition_failed(message: "Precondition failed", errors: nil, code: "PRECONDITION_FAILED")
-      render_error(message: message, errors: errors, code: code, status: :precondition_failed)
+    def render_precondition_failed(message: "Precondition failed", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 412, status: :precondition_failed)
     end
 
     # 415 Unsupported Media Type — wrong Content-Type header
-    def render_unsupported_media_type(message: "Unsupported media type", errors: nil, code: "UNSUPPORTED_MEDIA_TYPE")
-      render_error(message: message, errors: errors, code: code, status: :unsupported_media_type)
+    def render_unsupported_media_type(message: "Unsupported media type", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 415, status: :unsupported_media_type)
     end
 
     # 422 Unprocessable Entity — validation errors (most common for APIs)
-    def render_unprocessable(message: "Validation failed", errors: nil, code: "UNPROCESSABLE_ENTITY")
-      render_error(message: message, errors: errors, code: code, status: :unprocessable_entity)
+    def render_unprocessable(message: "Validation failed", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 422, status: :unprocessable_content)
     end
 
     # 423 Locked — resource is locked
-    def render_locked(message: "Resource is locked", errors: nil, code: "LOCKED")
-      render_error(message: message, errors: errors, code: code, status: :locked)
+    def render_locked(message: "Resource is locked", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 423, status: :locked)
     end
 
     # 429 Too Many Requests — rate limiting
-    def render_too_many_requests(message: "Too many requests. Please slow down.", errors: nil, code: "RATE_LIMITED")
-      render_error(message: message, errors: errors, code: code, status: :too_many_requests)
+    def render_too_many_requests(message: "Too many requests. Please slow down.", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 429, status: :too_many_requests)
     end
 
     # =========================================================================
@@ -193,28 +193,28 @@ module Respondo
     # =========================================================================
 
     # 500 Internal Server Error
-    def render_server_error(message: "An unexpected error occurred", errors: nil, code: "SERVER_ERROR")
-      render_error(message: message, errors: errors, code: code, status: :internal_server_error)
+    def render_server_error(message: "An unexpected error occurred", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 500, status: :internal_server_error)
     end
 
     # 501 Not Implemented — feature not built yet
-    def render_not_implemented(message: "This feature is not yet implemented", errors: nil, code: "NOT_IMPLEMENTED")
-      render_error(message: message, errors: errors, code: code, status: :not_implemented)
+    def render_not_implemented(message: "This feature is not yet implemented", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 501, status: :not_implemented)
     end
 
     # 502 Bad Gateway — upstream service failed
-    def render_bad_gateway(message: "Bad gateway — upstream service error", errors: nil, code: "BAD_GATEWAY")
-      render_error(message: message, errors: errors, code: code, status: :bad_gateway)
+    def render_bad_gateway(message: "Bad gateway — upstream service error", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 502, status: :bad_gateway)
     end
 
     # 503 Service Unavailable — maintenance, overloaded
-    def render_service_unavailable(message: "Service temporarily unavailable", errors: nil, code: "SERVICE_UNAVAILABLE")
-      render_error(message: message, errors: errors, code: code, status: :service_unavailable)
+    def render_service_unavailable(message: "Service temporarily unavailable", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 503, status: :service_unavailable)
     end
 
     # 504 Gateway Timeout — upstream service timed out
-    def render_gateway_timeout(message: "Gateway timeout — upstream service did not respond", errors: nil, code: "GATEWAY_TIMEOUT")
-      render_error(message: message, errors: errors, code: code, status: :gateway_timeout)
+    def render_gateway_timeout(message: "Gateway timeout — upstream service did not respond", errors: nil, meta: {})
+      render_error(message: message, errors: errors, meta: meta, code: 504, status: :gateway_timeout)
     end
 
     private

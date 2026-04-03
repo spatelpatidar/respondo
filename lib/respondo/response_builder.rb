@@ -69,26 +69,59 @@ module Respondo
     end
 
     def build_meta
-      meta = { timestamp: current_timestamp }
+      meta = {}
 
-      # Only extract pagination when caller has not explicitly disabled it
-      if @pagination
-        pagination = if @pagy
-          Pagination.extract(@pagy)
-        else
-          Pagination.extract(@raw_data)
-        end
-        meta[:pagination] = pagination if pagination
-      end
-
-      # Request ID (Rails only, opt-in via config)
+      # 1. Request ID first (opt-in, always authoritative)
       if Respondo.config.include_request_id && @request&.respond_to?(:request_id)
         meta[:request_id] = @request.request_id
       end
 
-      # Merge any caller-supplied meta last (allows overriding)
-      meta.merge(@extra_meta)
+      # 2. Timestamp second
+      meta[:timestamp] = current_timestamp
+
+      # 3. Global defaults in the middle (lowest priority)
+      meta.merge!(Respondo.config.default_meta)
+
+      # 4. Caller-supplied meta (overrides defaults)
+      meta.merge!(@extra_meta)
+
+      # 5. Pagination
+      if @pagination
+        pagination = @pagy ? Pagination.extract(@pagy) : Pagination.extract(@raw_data)
+        meta[:pagination] = pagination if pagination
+      end
+
+      # 6. Code and status always last
+      # (these come from @extra_meta via render_error, so we re-pin them to the end)
+      code   = meta.delete(:code)
+      status = meta.delete(:status)
+      meta[:code]   = code   if code
+      meta[:status] = status if status
+
+      meta
     end
+
+    # def build_meta
+    #   meta = { timestamp: current_timestamp }
+
+    #   # Only extract pagination when caller has not explicitly disabled it
+    #   if @pagination
+    #     pagination = if @pagy
+    #       Pagination.extract(@pagy)
+    #     else
+    #       Pagination.extract(@raw_data)
+    #     end
+    #     meta[:pagination] = pagination if pagination
+    #   end
+
+    #   # Request ID (Rails only, opt-in via config)
+    #   if Respondo.config.include_request_id && @request&.respond_to?(:request_id)
+    #     meta[:request_id] = @request.request_id
+    #   end
+
+    #   # Merge any caller-supplied meta last (allows overriding)
+    #   meta.merge(@extra_meta)
+    # end
 
     def current_timestamp
       if defined?(Time.current)

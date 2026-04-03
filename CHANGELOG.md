@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.0.0] — Production Ready
+
+### Breaking Changes
+- `render_error` and all error helpers (`render_bad_request`, `render_unauthorized`,
+  `render_forbidden`, `render_not_found`, etc.) — removed `status` as a public
+  parameter; status is now derived internally and can no longer be overridden by callers
+- All error helpers now accept `meta: {}` — allows per-call meta injection
+  (previously only `render_success` and success helpers supported this)
+
+### Added
+- `meta: {}` parameter on all error helpers — pass per-request meta such as
+  `api_version`, `env`, `region` directly at the call site
+- `config.default_meta` — static key-value pairs merged into every response's
+  meta block automatically (e.g. `{ api_version: "v1", platform: "api" }`)
+- Deterministic meta key ordering — `request_id` → `timestamp` → `default_meta`
+  → caller `meta` → `code` → `status`
+
+### Fixed
+- Error helper `code:` values were strings (e.g. `"404"`) while success helpers
+  used integers — all codes are now consistently integers across all helpers
+- Trailing commas removed from `render_service_unavailable` and
+  `render_gateway_timeout` signatures
+- `render_no_content` had mismatched `status: :ok` (200) with `code: 204` in
+  meta — now consistent
+- Caller-supplied `meta` could previously override system fields (`timestamp`,
+  `request_id`) — system fields are now always authoritative
+
+---
+
 ## [0.1.0] — Initial Release
 
 ### Added

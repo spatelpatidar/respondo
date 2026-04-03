@@ -141,7 +141,7 @@ RSpec.describe Respondo::ControllerHelpers do
     it "renders 401 with UNAUTHORIZED code" do
       controller.render_unauthorized
       expect(response_status).to                         eq(:unauthorized)
-      expect(response_body[:meta][:code]).to       eq("UNAUTHORIZED")
+      expect(response_body[:meta][:code]).to       eq(401)
     end
 
     it "accepts custom message" do
@@ -154,7 +154,7 @@ RSpec.describe Respondo::ControllerHelpers do
     it "renders 403" do
       controller.render_forbidden
       expect(response_status).to eq(:forbidden)
-      expect(response_body[:meta][:code]).to eq("FORBIDDEN")
+      expect(response_body[:meta][:code]).to eq(403)
     end
   end
 
@@ -162,7 +162,7 @@ RSpec.describe Respondo::ControllerHelpers do
     it "renders 404" do
       controller.render_not_found
       expect(response_status).to eq(:not_found)
-      expect(response_body[:meta][:code]).to eq("NOT_FOUND")
+      expect(response_body[:meta][:code]).to eq(404)
     end
   end
 
@@ -170,7 +170,7 @@ RSpec.describe Respondo::ControllerHelpers do
     it "renders 500" do
       controller.render_server_error
       expect(response_status).to eq(:internal_server_error)
-      expect(response_body[:meta][:code]).to eq("SERVER_ERROR")
+      expect(response_body[:meta][:code]).to eq(500)
     end
   end
 
@@ -286,7 +286,7 @@ RSpec.describe Respondo::ControllerHelpers do
     it "#render_bad_request renders 400 with BAD_REQUEST code" do
       controller.render_bad_request(message: "Missing param")
       expect(response_status).to eq(:bad_request)
-      expect(response_body[:meta][:code]).to eq("BAD_REQUEST")
+      expect(response_body[:meta][:code]).to eq(400)
       expect(response_body[:message]).to eq("Missing param")
     end
 
@@ -298,69 +298,69 @@ RSpec.describe Respondo::ControllerHelpers do
     it "#render_payment_required renders 402" do
       controller.render_payment_required
       expect(response_status).to eq(:payment_required)
-      expect(response_body[:meta][:code]).to eq("PAYMENT_REQUIRED")
+      expect(response_body[:meta][:code]).to eq(402)
     end
 
     it "#render_method_not_allowed renders 405" do
       controller.render_method_not_allowed
       expect(response_status).to eq(:method_not_allowed)
-      expect(response_body[:meta][:code]).to eq("METHOD_NOT_ALLOWED")
+      expect(response_body[:meta][:code]).to eq(405)
     end
 
     it "#render_not_acceptable renders 406" do
       controller.render_not_acceptable
       expect(response_status).to eq(:not_acceptable)
-      expect(response_body[:meta][:code]).to eq("NOT_ACCEPTABLE")
+      expect(response_body[:meta][:code]).to eq(406)
     end
 
     it "#render_request_timeout renders 408" do
       controller.render_request_timeout
       expect(response_status).to eq(:request_timeout)
-      expect(response_body[:meta][:code]).to eq("REQUEST_TIMEOUT")
+      expect(response_body[:meta][:code]).to eq(408)
     end
 
     it "#render_conflict renders 409 with CONFLICT code" do
       controller.render_conflict(message: "Email already taken", errors: { email: ["is taken"] })
       expect(response_status).to eq(:conflict)
-      expect(response_body[:meta][:code]).to eq("CONFLICT")
+      expect(response_body[:meta][:code]).to eq(409)
       expect(response_body[:errors]).to eq({ email: ["is taken"] })
     end
 
     it "#render_gone renders 410" do
       controller.render_gone(message: "This account has been deleted")
       expect(response_status).to eq(:gone)
-      expect(response_body[:meta][:code]).to eq("GONE")
+      expect(response_body[:meta][:code]).to eq(410)
     end
 
     it "#render_precondition_failed renders 412" do
       controller.render_precondition_failed
       expect(response_status).to eq(:precondition_failed)
-      expect(response_body[:meta][:code]).to eq("PRECONDITION_FAILED")
+      expect(response_body[:meta][:code]).to eq(412)
     end
 
     it "#render_unsupported_media_type renders 415" do
       controller.render_unsupported_media_type
       expect(response_status).to eq(:unsupported_media_type)
-      expect(response_body[:meta][:code]).to eq("UNSUPPORTED_MEDIA_TYPE")
+      expect(response_body[:meta][:code]).to eq(415)
     end
 
     it "#render_unprocessable renders 422 with UNPROCESSABLE code" do
       controller.render_unprocessable(message: "Validation failed", errors: { name: ["can't be blank"] })
-      expect(response_status).to eq(:unprocessable_entity)
-      expect(response_body[:meta][:code]).to eq("UNPROCESSABLE_ENTITY")
+      expect(response_status).to eq(:unprocessable_content)
+      expect(response_body[:meta][:code]).to eq(422)
       expect(response_body[:errors]).to eq({ name: ["can't be blank"] })
     end
 
     it "#render_locked renders 423" do
       controller.render_locked
       expect(response_status).to eq(:locked)
-      expect(response_body[:meta][:code]).to eq("LOCKED")
+      expect(response_body[:meta][:code]).to eq(423)
     end
 
     it "#render_too_many_requests renders 429 with RATE_LIMITED code" do
       controller.render_too_many_requests
       expect(response_status).to eq(:too_many_requests)
-      expect(response_body[:meta][:code]).to eq("RATE_LIMITED")
+      expect(response_body[:meta][:code]).to eq(429)
     end
 
     it "#render_too_many_requests accepts custom message" do
@@ -375,31 +375,31 @@ RSpec.describe Respondo::ControllerHelpers do
     it "#render_not_implemented renders 501" do
       controller.render_not_implemented
       expect(response_status).to eq(:not_implemented)
-      expect(response_body[:meta][:code]).to eq("NOT_IMPLEMENTED")
+      expect(response_body[:meta][:code]).to eq(501)
     end
 
     it "#render_bad_gateway renders 502" do
       controller.render_bad_gateway
       expect(response_status).to eq(:bad_gateway)
-      expect(response_body[:meta][:code]).to eq("BAD_GATEWAY")
+      expect(response_body[:meta][:code]).to eq(502)
     end
 
     it "#render_service_unavailable renders 503" do
       controller.render_service_unavailable
       expect(response_status).to eq(:service_unavailable)
-      expect(response_body[:meta][:code]).to eq("SERVICE_UNAVAILABLE")
+      expect(response_body[:meta][:code]).to eq(503)
     end
 
     it "#render_gateway_timeout renders 504" do
       controller.render_gateway_timeout
       expect(response_status).to eq(:gateway_timeout)
-      expect(response_body[:meta][:code]).to eq("GATEWAY_TIMEOUT")
+      expect(response_body[:meta][:code]).to eq(504)
     end
 
     it "#render_server_error accepts custom message" do
       controller.render_server_error(message: "Database connection failed")
       expect(response_body[:message]).to eq("Database connection failed")
-      expect(response_body[:meta][:code]).to eq("SERVER_ERROR")
+      expect(response_body[:meta][:code]).to eq(500)
     end
   end
 
