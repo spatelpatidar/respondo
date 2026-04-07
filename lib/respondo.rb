@@ -3,7 +3,7 @@
 require_relative "respondo/version"
 require_relative "respondo/configuration"
 require_relative "respondo/serializer"
-require_relative "respondo/pagination"
+# require_relative "respondo/pagination"
 require_relative "respondo/response_builder"
 require_relative "respondo/controller_helpers"
 

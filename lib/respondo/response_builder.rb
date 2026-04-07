@@ -17,24 +17,24 @@ module Respondo
   #   { timestamp: ISO8601 String }
   # Plus pagination keys when pagination: true and the data is a paginated collection.
   # Plus request_id when config.include_request_id is true.
+  # Plus pagination when a pagination hash is supplied by the caller.
   class ResponseBuilder
     # @param success    [Boolean]
     # @param data       [Object]   anything — serialized automatically
     # @param message    [String]
     # @param meta       [Hash]     caller-supplied extra meta (merged in)
     # @param errors     [Hash]     field-level errors (for 422 responses)
-    # @param pagy       [Pagy]     optional Pagy object for pagination meta
-    # @param pagination [Boolean]  true = include pagination meta (default),
-    #                              false = always suppress pagination meta
+    # @param pagination [Hash, nil] plain pagination hash supplied by the caller, e.g.
+    #                               { current_page: 1, per_page: 25, total_pages: 4,
+    #                                 total_count: 100, next_page: 2, prev_page: nil }
     # @param request    [Object]   ActionDispatch::Request (for request_id)
     def initialize(success:, data: nil, message: nil, meta: {}, errors: nil,
-                   pagy: nil, pagination: true, request: nil)
+                   pagination: nil, request: nil)
       @success    = success
       @raw_data   = data
       @message    = message
       @extra_meta = meta || {}
       @errors     = errors
-      @pagy       = pagy
       @pagination = pagination
       @request    = request
     end
@@ -85,14 +85,10 @@ module Respondo
       # 4. Caller-supplied meta (overrides defaults)
       meta.merge!(@extra_meta)
 
-      # 5. Pagination
-      if @pagination
-        pagination = @pagy ? Pagination.extract(@pagy) : Pagination.extract(@raw_data)
-        meta[:pagination] = pagination if pagination
-      end
+      # 5. Pagination — plain hash from the caller, placed last before code/status
+      meta[:pagination] = @pagination if @pagination.is_a?(Hash) && !@pagination.empty?
 
-      # 6. Code and status always last
-      # (these come from @extra_meta via render_error, so we re-pin them to the end)
+      # 6. Re-pin code and status to the very end
       code   = meta.delete(:code)
       status = meta.delete(:status)
       meta[:code]   = code   if code

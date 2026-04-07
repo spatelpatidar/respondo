@@ -60,22 +60,53 @@ Respondo auto-includes itself into `ActionController::Base` and `ActionControlle
 
 Every single response — success or error — returns the same four keys:
 
-| Key       | Type             | Description                                  |
-|-----------|------------------|----------------------------------------------|
-| `success` | Boolean          | `true` or `false`                            |
-| `message` | String           | Human-readable description                   |
-| `data`    | Object/Array/nil | The payload                                  |
-| `meta`    | Object           | Timestamp + pagination + optional request_id |
+| Key       | Type             | Description                                          |
+|-----------|------------------|------------------------------------------------------|
+| `success` | Boolean          | `true` or `false`                                    |
+| `message` | String           | Human-readable description                           |
+| `data`    | Object/Array/nil | The payload                                          |
+| `meta`    | Object           | Timestamp + pagination (if passed) + optional request_id |
 
 Error responses additionally include:
 
 | Key      | Type | Description                          |
 |----------|------|--------------------------------------|
 | `errors` | Hash | Field-level errors `{field: [msgs]}` |
+| `errors` | Hash | Field-level errors `{field: msgs}` |
 
 ---
 
 ## Complete Helper Reference
+
+### 1xx — Informational Helpers
+
+> 1xx responses are protocol-level and carry no body in standard HTTP/1.1. Respondo still returns a JSON body for API logging consistency. Use with care.
+
+#### `render_continue` — 100
+```ruby
+render_continue
+render_continue(message: "Continue sending request body")
+```
+
+#### `render_switching_protocols` — 101
+```ruby
+render_switching_protocols
+render_switching_protocols(message: "Upgrading to WebSocket")
+```
+
+#### `render_processing` — 102
+```ruby
+render_processing
+render_processing(message: "Working on it — please wait")
+```
+
+#### `render_early_hints` — 103
+```ruby
+render_early_hints
+render_early_hints(message: "Early hints provided", meta: { link: "</style.css>; rel=preload" })
+```
+
+---
 
 ### 2xx — Success Helpers
 
@@ -102,12 +133,26 @@ render_accepted(message: "Your export is being processed. You will receive an em
 render_accepted(data: { job_id: "abc123" }, message: "Job queued")
 ```
 
+#### `render_non_authoritative` — 203 Non-Authoritative Information
+Use when data comes from a third-party or cache rather than the origin server.
+
+```ruby
+render_non_authoritative(data: @user, message: "Data sourced from cache")
+```
+
 #### `render_no_content` — 200 OK
 Use after DELETE or actions with no meaningful response body. Returns standard JSON structure for consistency.
 
 ```ruby
 render_no_content                                  # "Deleted successfully"
 render_no_content(message: "Account deactivated")
+```
+
+#### `render_reset_content` — 205 Reset Content
+Tell the client to reset the document view (e.g. clear a form after submission).
+
+```ruby
+render_reset_content(message: "Form submitted — please reset the view")
 ```
 
 #### `render_partial_content` — 206 Partial Content
@@ -128,138 +173,216 @@ render_multi_status(
 )
 ```
 
+#### `render_already_reported` — 208 Already Reported
+```ruby
+render_already_reported(data: @resource, message: "Already reported in this binding")
+```
+
+#### `render_im_used` — 226 IM Used
+```ruby
+render_im_used(data: @resource, message: "Delta encoding applied")
+```
+
+---
+
+### 3xx — Redirect Helpers
+
+> These return a JSON body so your API can communicate redirect intent with context.
+> Pass the target URL via `meta: { redirect_url: "..." }`.
+
+#### `render_multiple_choices` — 300
+```ruby
+render_multiple_choices(
+  data: [{ format: "json", url: "/resource.json" }, { format: "xml", url: "/resource.xml" }],
+  message: "Multiple representations available"
+)
+```
+
+#### `render_moved_permanently` — 301
+```ruby
+render_moved_permanently(message: "This endpoint has moved", meta: { redirect_url: new_url })
+```
+
+#### `render_found` — 302
+```ruby
+render_found(message: "Resource temporarily at another URL", meta: { redirect_url: temp_url })
+```
+
+#### `render_see_other` — 303
+```ruby
+render_see_other(message: "See the canonical resource", meta: { redirect_url: canonical_url })
+```
+
+#### `render_not_modified` — 304
+```ruby
+render_not_modified(message: "Your cached version is still valid")
+```
+
+#### `render_temporary_redirect` — 307
+```ruby
+render_temporary_redirect(message: "Repeat this request at the redirect URL", meta: { redirect_url: url })
+```
+
+#### `render_permanent_redirect` — 308
+```ruby
+render_permanent_redirect(message: "Permanently moved — update your bookmarks", meta: { redirect_url: url })
+```
+
 ---
 
 ### 4xx — Client Error Helpers
 
 #### `render_bad_request` — 400 Bad Request
-Malformed request, missing required parameters, invalid format.
-
 ```ruby
-render_bad_request                                           # default message
-render_bad_request("The 'date' parameter is required")
-render_bad_request("Invalid input", errors: { date: ["must be a valid date"] })
-render_bad_request("Invalid input", code: "INVALID_FORMAT") # custom error code
+render_bad_request(message: "The 'date' parameter is required")
+render_bad_request(message: "Invalid input", errors: { date: ["must be a valid date"] })
 ```
 
 #### `render_unauthorized` — 401 Unauthorized
-User is not authenticated. Use when no valid token/session is present.
-
 ```ruby
-render_unauthorized                          # "Unauthorized"
-render_unauthorized("Please log in to continue")
-render_unauthorized("Token has expired", code: "TOKEN_EXPIRED")
+render_unauthorized(message: "Please log in to continue")
+render_unauthorized(message: "Token has expired")
 ```
 
 #### `render_payment_required` — 402 Payment Required
-Feature is behind a paywall or subscription.
-
 ```ruby
-render_payment_required
-render_payment_required("Upgrade to Pro to access this feature")
-render_payment_required("Subscription expired", code: "SUBSCRIPTION_EXPIRED")
+render_payment_required(message: "Upgrade to Pro to access this feature")
 ```
 
 #### `render_forbidden` — 403 Forbidden
-User is authenticated but lacks permission for this action.
-
 ```ruby
-render_forbidden
-render_forbidden("You can only edit your own posts")
-render_forbidden("Admin access required", code: "ADMIN_REQUIRED")
+render_forbidden(message: "You can only edit your own posts")
 ```
 
 #### `render_not_found` — 404 Not Found
-Requested resource does not exist.
-
 ```ruby
-render_not_found
-render_not_found("User not found")
-render_not_found("Post ##{params[:id]} does not exist")
+render_not_found(message: "User not found")
+render_not_found(message: "Post ##{params[:id]} does not exist")
 ```
 
-#### `render_method_not_allowed` — 405 Method Not Allowed
-The HTTP verb used is not supported for this endpoint.
-
+#### `render_method_not_allowed` — 405
 ```ruby
-render_method_not_allowed
-render_method_not_allowed("This endpoint only accepts POST requests")
+render_method_not_allowed(message: "This endpoint only accepts POST requests")
 ```
 
-#### `render_not_acceptable` — 406 Not Acceptable
-The server cannot produce a response matching the client's Accept header.
-
+#### `render_not_acceptable` — 406
 ```ruby
-render_not_acceptable
-render_not_acceptable("Only application/json is supported")
+render_not_acceptable(message: "Only application/json is supported")
 ```
 
-#### `render_request_timeout` — 408 Request Timeout
-The request took too long to process.
-
+#### `render_proxy_auth_required` — 407
 ```ruby
-render_request_timeout
-render_request_timeout("The query took too long. Try a smaller date range.")
+render_proxy_auth_required(message: "Authenticate with the proxy first")
+```
+
+#### `render_request_timeout` — 408
+```ruby
+render_request_timeout(message: "The query took too long. Try a smaller date range.")
 ```
 
 #### `render_conflict` — 409 Conflict
-Request conflicts with the current state of the resource. Use for duplicate records, state conflicts.
-
 ```ruby
-render_conflict
-render_conflict("Email address is already registered")
-render_conflict("Cannot cancel a completed order", code: "INVALID_STATE_TRANSITION")
-render_conflict("Duplicate entry", errors: { email: ["has already been taken"] })
+render_conflict(message: "Email address is already registered")
+render_conflict(message: "Duplicate entry", errors: { email: ["has already been taken"] })
 ```
 
 #### `render_gone` — 410 Gone
-Resource existed but has been permanently deleted.
-
 ```ruby
-render_gone
-render_gone("This account has been permanently deleted")
+render_gone(message: "This account has been permanently deleted")
 ```
 
-#### `render_precondition_failed` — 412 Precondition Failed
-Conditional request headers (If-Match, If-None-Match) did not match.
-
+#### `render_length_required` — 411
 ```ruby
-render_precondition_failed
-render_precondition_failed("Resource has been modified since your last request")
+render_length_required(message: "Content-Length header is required")
 ```
 
-#### `render_unsupported_media_type` — 415 Unsupported Media Type
-The Content-Type header is not supported.
-
+#### `render_precondition_failed` — 412
 ```ruby
-render_unsupported_media_type
-render_unsupported_media_type("Please send requests as application/json")
+render_precondition_failed(message: "Resource has been modified since your last request")
+```
+
+#### `render_payload_too_large` — 413
+```ruby
+render_payload_too_large(message: "File exceeds the 10 MB upload limit")
+```
+
+#### `render_uri_too_long` — 414
+```ruby
+render_uri_too_long(message: "That URL is too long to process")
+```
+
+#### `render_unsupported_media_type` — 415
+```ruby
+render_unsupported_media_type(message: "Please send requests as application/json")
+```
+
+#### `render_range_not_satisfiable` — 416
+```ruby
+render_range_not_satisfiable(message: "Requested byte range is out of bounds")
+```
+
+#### `render_expectation_failed` — 417
+```ruby
+render_expectation_failed(message: "Expect header value cannot be met")
+```
+
+#### `render_im_a_teapot` — 418
+```ruby
+render_im_a_teapot(message: "I'm a teapot — I cannot brew coffee")
+```
+
+#### `render_misdirected_request` — 421
+```ruby
+render_misdirected_request(message: "Request sent to the wrong server")
 ```
 
 #### `render_unprocessable` — 422 Unprocessable Entity
 Validation errors. The most commonly used error helper in Rails APIs.
 
 ```ruby
-render_unprocessable("Validation failed", errors: user.errors)
-render_unprocessable("Invalid data", errors: { name: ["can't be blank"], age: ["must be over 18"] })
+render_unprocessable(message: "Validation failed", errors: user.errors)
+render_unprocessable(message: "Invalid data", errors: { name: ["can't be blank"] })
 ```
 
-#### `render_locked` — 423 Locked
-Resource is locked and cannot be modified.
-
+#### `render_locked` — 423
 ```ruby
-render_locked
-render_locked("This record is locked by another user")
-render_locked("Invoice is locked after approval", code: "INVOICE_LOCKED")
+render_locked(message: "This record is locked by another user")
 ```
 
-#### `render_too_many_requests` — 429 Too Many Requests
-Rate limit exceeded.
-
+#### `render_failed_dependency` — 424
 ```ruby
-render_too_many_requests
-render_too_many_requests("You have exceeded 100 requests per minute. Retry after 60 seconds.")
-render_too_many_requests("API limit reached", code: "API_LIMIT_EXCEEDED")
+render_failed_dependency(message: "Prerequisite resource creation failed")
+```
+
+#### `render_too_early` — 425
+```ruby
+render_too_early(message: "Request may be a replay — rejected for safety")
+```
+
+#### `render_upgrade_required` — 426
+```ruby
+render_upgrade_required(message: "Please upgrade to TLS 1.3")
+```
+
+#### `render_precondition_required` — 428
+```ruby
+render_precondition_required(message: "Include an If-Match header with your request")
+```
+
+#### `render_too_many_requests` — 429
+```ruby
+render_too_many_requests(message: "You have exceeded 100 requests per minute.")
+render_too_many_requests(message: "Rate limit hit", meta: { retry_after: 60 })
+```
+
+#### `render_request_header_fields_too_large` — 431
+```ruby
+render_request_header_fields_too_large(message: "Cookie header is too large")
+```
+
+#### `render_unavailable_for_legal_reasons` — 451
+```ruby
+render_unavailable_for_legal_reasons(message: "This content is blocked in your region")
 ```
 
 ---
@@ -267,11 +390,8 @@ render_too_many_requests("API limit reached", code: "API_LIMIT_EXCEEDED")
 ### 5xx — Server Error Helpers
 
 #### `render_server_error` — 500 Internal Server Error
-An unexpected error occurred on the server.
-
 ```ruby
-render_server_error
-render_server_error("Something went wrong. Our team has been notified.")
+render_server_error(message: "Something went wrong. Our team has been notified.")
 
 # Common pattern — rescue unexpected exceptions
 rescue StandardError => e
@@ -279,37 +399,55 @@ rescue StandardError => e
   render_server_error("An unexpected error occurred")
 ```
 
-#### `render_not_implemented` — 501 Not Implemented
-The requested feature has not been built yet.
-
+#### `render_not_implemented` — 501
 ```ruby
-render_not_implemented
-render_not_implemented("CSV export is coming soon")
+render_not_implemented(message: "CSV export is coming soon")
 ```
 
-#### `render_bad_gateway` — 502 Bad Gateway
-An upstream service (third-party API, microservice) returned an invalid response.
-
+#### `render_bad_gateway` — 502
 ```ruby
-render_bad_gateway
-render_bad_gateway("Payment gateway is currently unavailable")
-render_bad_gateway("Could not reach the SMS service", code: "SMS_GATEWAY_ERROR")
+render_bad_gateway(message: "Payment gateway is currently unavailable")
 ```
 
-#### `render_service_unavailable` — 503 Service Unavailable
-Server is temporarily unable to handle the request — maintenance, overloaded.
-
+#### `render_service_unavailable` — 503
 ```ruby
-render_service_unavailable
-render_service_unavailable("We are currently under maintenance. Back in 30 minutes.")
+render_service_unavailable(message: "Down for maintenance. Back in 30 minutes.")
+render_service_unavailable(message: "Maintenance window", meta: { retry_after: 1800 })
 ```
 
-#### `render_gateway_timeout` — 504 Gateway Timeout
-An upstream service timed out before responding.
-
+#### `render_gateway_timeout` — 504
 ```ruby
-render_gateway_timeout
-render_gateway_timeout("The payment processor did not respond in time. Please try again.")
+render_gateway_timeout(message: "The payment processor did not respond in time.")
+```
+
+#### `render_http_version_not_supported` — 505
+```ruby
+render_http_version_not_supported(message: "Only HTTP/1.1 and HTTP/2 are supported")
+```
+
+#### `render_variant_also_negotiates` — 506
+```ruby
+render_variant_also_negotiates(message: "Server content-negotiation loop detected")
+```
+
+#### `render_insufficient_storage` — 507
+```ruby
+render_insufficient_storage(message: "Disk quota exceeded on this node")
+```
+
+#### `render_loop_detected` — 508
+```ruby
+render_loop_detected(message: "Infinite redirect loop detected")
+```
+
+#### `render_not_extended` — 510
+```ruby
+render_not_extended(message: "Further extensions required to fulfil this request")
+```
+
+#### `render_network_authentication_required` — 511
+```ruby
+render_network_authentication_required(message: "Sign in to the network portal first")
 ```
 
 ---
@@ -320,27 +458,38 @@ render_gateway_timeout("The payment processor did not respond in time. Please tr
 class UsersController < ApplicationController
 
   def index
-    users = User.active.page(params[:page]).per(25)
-    render_ok(data: users, message: "Users fetched")
-    # → 200, with pagination meta auto-included
+    page     = (params[:page]     || 1).to_i
+    per_page = (params[:per_page] || 5).to_i
+
+    @users =  Kaminari.paginate_array(User.active).page(page).per(per_page)
+
+    render_ok(
+      data:       @users,
+      message:    "Users fetched",
+      pagination: {
+        per_page: per_page.to_i,
+        current_page: @users.current_page,
+        next_page: @users.next_page,
+        prev_page: @users.prev_page,
+        total_pages: @users.total_pages,
+        total_count: @users.total_count
+      }
+    )
   end
 
   def show
     user = User.find(params[:id])
     render_ok(data: user, message: "User found")
   rescue ActiveRecord::RecordNotFound
-    render_not_found("User ##{params[:id]} not found")
-    # → 404, { success: false, errors_code: "NOT_FOUND" }
+    render_not_found(message: "User ##{params[:id]} not found", error: { id: "User #{params[:id]} not exist"})
   end
 
   def create
     user = User.new(user_params)
     if user.save
       render_created(data: user, message: "Account created successfully")
-      # → 201
     else
-      render_unprocessable("Validation failed", errors: user.errors)
-      # → 422, { errors: { email: ["is invalid"] } }
+      render_unprocessable(message: "Validation failed", errors: user.errors)
     end
   end
 
@@ -348,26 +497,22 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
 
     unless user == current_user || current_user.admin?
-      render_forbidden("You can only update your own profile")
-      # → 403
+      render_forbidden(message: "You can only update your own profile", error: { profile: "update your own profile" })
       return
     end
 
     if user.update(user_params)
       render_ok(data: user, message: "Profile updated")
     else
-      render_conflict("Could not update profile", errors: user.errors)
-      # → 409
+      render_conflict(message: "Could not update profile", errors: user.errors)
     end
   end
 
   def destroy
     User.find(params[:id]).destroy!
     render_no_content(message: "Account deleted")
-    # → 200
   rescue ActiveRecord::RecordNotFound
-    render_gone("This account no longer exists")
-    # → 410
+    render_gone(message: "This account no longer exists")
   end
 
 end
@@ -378,11 +523,11 @@ class PaymentsController < ApplicationController
     result = PaymentGateway.charge(amount: params[:amount], token: params[:token])
     render_created(data: result, message: "Payment successful")
   rescue PaymentGateway::CardDeclined => e
-    render_unprocessable(e.message)
+    render_unprocessable(message: e.message)
   rescue PaymentGateway::Timeout
-    render_gateway_timeout("Payment processor timed out. You have not been charged.")
+    render_gateway_timeout(message: "Payment processor timed out. You have not been charged.")
   rescue PaymentGateway::Error => e
-    render_bad_gateway("Payment gateway error: #{e.message}")
+    render_bad_gateway(message: "Payment gateway error: #{e.message}")
   end
 
 end
@@ -392,10 +537,9 @@ class ReportsController < ApplicationController
   def generate
     ReportJob.perform_later(current_user.id, params[:type])
     render_accepted(
-      data: { estimated_time: "2 minutes" },
+      data:    { estimated_time: "2 minutes" },
       message: "Report is being generated. We will email you when it is ready."
     )
-    # → 202
   end
 
 end
@@ -403,41 +547,161 @@ end
 
 ---
 
+## Pagination
+
+Respondo does **not** paginate data for you — your pagination library does that.
+You build the pagination hash yourself and pass it via `pagination:`. This keeps the gem simple, dependency-free, and works with any library.
+
+### Kaminari
+
+```ruby
+def index
+  @users = User.page(params[:page]).per(25)
+
+  render_ok(
+    data:       @users,
+    message:    "Users fetched",
+    pagination: {
+      current_page: @users.current_page,
+      per_page:     @users.limit_value,
+      total_pages:  @users.total_pages,
+      total_count:  @users.total_count,
+      next_page:    @users.next_page,
+      prev_page:    @users.prev_page
+    }
+  )
+end
+```
+
+### Pagy
+
+```ruby
+def index
+  @pagy, @users = pagy(User.all, items: 25)
+
+  render_ok(
+    data:       @users,
+    message:    "Users fetched",
+    pagination: {
+      current_page: @pagy.page,
+      per_page:     @pagy.items,
+      total_pages:  @pagy.pages,
+      total_count:  @pagy.count,
+      next_page:    @pagy.next,
+      prev_page:    @pagy.prev
+    }
+  )
+end
+```
+
+### WillPaginate
+
+```ruby
+def index
+  @users = User.paginate(page: params[:page], per_page: 25)
+
+  render_ok(
+    data:       @users,
+    message:    "Users fetched",
+    pagination: {
+      current_page: @users.current_page,
+      per_page:     @users.per_page,
+      total_pages:  @users.total_pages,
+      total_count:  @users.total_entries,
+      next_page:    @users.next_page,
+      prev_page:    @users.previous_page
+    }
+  )
+end
+```
+
+### No pagination
+
+```ruby
+render_ok(data: @user, message: "User found")
+# → meta will have no pagination key at all
+```
+
+---
+
 ## Quick Reference Card
 
 ```ruby
+# Core
+render_success(data:, message:, meta:, code:, pagination:, code:, status:)
+render_error(message:, errors:, code:, meta:, status:)
+
+# 1xx — Informational
+render_continue(message:, meta:)
+render_switching_protocols(message:, meta:)
+render_processing(message:, meta:)
+render_early_hints(message:, meta:)
+
 # 2xx — Success
-render_success(data:, message:, meta:, pagy:, pagination:,code: , status:)
+render_success(data:, message:, meta:, pagination:, code: , status:)
 render_ok(data:, message:, meta:, pagination:)
-render_created(data:, message:, pagination:)
-render_accepted(data:, message:)
-render_no_content(message:)
-render_partial_content(data:, message:, meta:)
-render_multi_status(data:, message:, meta:)
+render_created(data:, message:, meta:, pagination:)
+render_accepted(data:, message:, meta:, pagination:)
+render_non_authoritative(data:, message:, meta:, pagination:)
+render_no_content(message:, meta:, pagination:)
+render_reset_content(message:, meta:, pagination:)
+render_partial_content(data:, message:, meta:, pagination:)
+render_multi_status(data:, message:, meta:, pagination:)
+render_already_reported(data:, message:, meta:, pagination:)
+render_im_used(data:, message:, meta:, pagination:)
+
+# 3xx — Redirects
+render_multiple_choices(data:, message:, meta:, pagination:)
+render_moved_permanently(message:, meta:, pagination:)
+render_found(message:, meta:, pagination:)
+render_see_other(message:, meta:, pagination:)
+render_not_modified(message:, meta:, pagination:)
+render_temporary_redirect(message:, meta:, pagination:)
+render_permanent_redirect(message:, meta:, pagination:)
 
 # 4xx — Client Errors
-render_bad_request(message, errors:, code:)
-render_unauthorized(message, code:)
-render_payment_required(message, code:)
-render_forbidden(message, code:)
-render_not_found(message, code:)
-render_method_not_allowed(message, code:)
-render_not_acceptable(message, code:)
-render_request_timeout(message, code:)
-render_conflict(message, errors:, code:)
-render_gone(message, code:)
-render_precondition_failed(message, code:)
-render_unsupported_media_type(message, code:)
-render_unprocessable(message, errors:)
-render_locked(message, code:)
-render_too_many_requests(message, code:)
+render_bad_request(message:, errors:, meta:)
+render_unauthorized(message:, errors:, meta:)
+render_payment_required(message:, errors:, meta:)
+render_forbidden(message:, errors:, meta:)
+render_not_found(message:, errors:, meta:)
+render_method_not_allowed(message:, errors:, meta:)
+render_not_acceptable(message:, errors:, meta:)
+render_proxy_auth_required(message:, errors:, meta:)
+render_request_timeout(message:, errors:, meta:)
+render_conflict(message:, errors:, meta:)
+render_gone(message:, errors:, meta:)
+render_length_required(message:, errors:, meta:)
+render_precondition_failed(message:, errors:, meta:)
+render_payload_too_large(message:, errors:, meta:)
+render_uri_too_long(message:, errors:, meta:)
+render_unsupported_media_type(message:, errors:, meta:)
+render_range_not_satisfiable(message:, errors:, meta:)
+render_expectation_failed(message:, errors:, meta:)
+render_im_a_teapot(message:, errors:, meta:)
+render_misdirected_request(message:, errors:, meta:)
+render_unprocessable(message:, errors:, meta:)
+render_locked(message:, errors:, meta:)
+render_failed_dependency(message:, errors:, meta:)
+render_too_early(message:, errors:, meta:)
+render_upgrade_required(message:, errors:, meta:)
+render_precondition_required(message:, errors:, meta:)
+render_too_many_requests(message:, errors:, meta:)
+render_request_header_fields_too_large(message:, errors:, meta:)
+render_unavailable_for_legal_reasons(message:, errors:, meta:)
 
 # 5xx — Server Errors
-render_server_error(message, code:)
-render_not_implemented(message, code:)
-render_bad_gateway(message, code:)
-render_service_unavailable(message, code:)
-render_gateway_timeout(message, code:)
+render_server_error(message:, errors:, meta:)
+render_not_implemented(message:, errors:, meta:)
+render_bad_gateway(message:, errors:, meta:)
+render_service_unavailable(message:, errors:, meta:)
+render_gateway_timeout(message:, errors:, meta:)
+render_http_version_not_supported(message:, errors:, meta:)
+render_variant_also_negotiates(message:, errors:, meta:)
+render_insufficient_storage(message:, errors:, meta:)
+render_loop_detected(message:, errors:, meta:)
+render_not_extended(message:, errors:, meta:)
+render_network_authentication_required(message:, errors:, meta:)
 ```
 
 ---
@@ -446,17 +710,17 @@ render_gateway_timeout(message, code:)
 
 Respondo automatically handles:
 
-| Input type                      | Output                                      |
-|---------------------------------|---------------------------------------------|
-| `ActiveRecord::Base` instance   | `record.as_json`                            |
-| `ActiveRecord::Relation`        | Array of `as_json` records                  |
-| `ActiveModel::Errors`           | `{ field: ["message", ...] }`               |
-| `Hash`                          | Passed through (values serialized)          |
-| `Array`                         | Each element serialized recursively         |
-| `Exception`                     | `{ message: e.message }`                   |
-| Anything with `#as_json`        | `.as_json`                                  |
-| Anything with `#to_h`           | `.to_h`                                     |
-| Primitives (String, Integer...)  | As-is                                      |
+| Input type                       | Output                              |
+|----------------------------------|-------------------------------------|
+| `ActiveRecord::Base` instance    | `record.as_json`                    |
+| `ActiveRecord::Relation`         | Array of `as_json` records          |
+| `ActiveModel::Errors`            | `{ field: ["message", ...] }`       |
+| `Hash`                           | Passed through (values serialized)  |
+| `Array`                          | Each element serialized recursively |
+| `Exception`                      | `{ message: e.message }`            |
+| Anything with `#as_json`         | `.as_json`                          |
+| Anything with `#to_h`            | `.to_h`                             |
+| Primitives (String, Integer...)  | As-is                               |
 
 ### Custom serializer
 
@@ -469,41 +733,6 @@ end
 
 ---
 
-## Pagination Meta
-
-Automatically detected — no extra code needed.
-
-### Kaminari
-
-```ruby
-users = User.page(params[:page]).per(25)
-render_ok(data: users)
-# meta.pagination is populated automatically
-```
-
-### Pagy
-
-```ruby
-pagy, users = pagy(User.all)
-render_ok(data: users, pagy: pagy)
-```
-
-### WillPaginate
-
-```ruby
-users = User.paginate(page: params[:page], per_page: 25)
-render_ok(data: users)
-```
-
-### Suppress pagination
-
-```ruby
-# Even if the collection is paginated, hide the meta
-render_ok(data: users, pagination: false)
-```
-
----
-
 ## camelCase for Flutter / JavaScript
 
 ```ruby
@@ -511,7 +740,7 @@ Respondo.configure { |c| c.camelize_keys = true }
 ```
 
 All keys in the response — including nested `meta.pagination` — are camelized:
-`current_page` → `currentPage`, `total_count` → `totalCount`, `error_code` → `errorCode`.
+`current_page` → `currentPage`, `total_count` → `totalCount`, `next_page` → `nextPage`, `error_code` → `errorCode`.
 
 ### Flutter Integration
 
@@ -545,9 +774,8 @@ lib/
     ├── version.rb                 # VERSION
     ├── configuration.rb           # Config with defaults
     ├── serializer.rb              # Auto-detects and serializes any object
-    ├── pagination.rb              # Kaminari / Pagy / WillPaginate extractor
     ├── response_builder.rb        # Assembles the final Hash
-    ├── controller_helpers.rb      # All render_* helpers (2xx, 4xx, 5xx)
+    ├── controller_helpers.rb      # All render_* helpers (1xx–5xx)
     └── railtie.rb                 # Auto-includes into Rails controllers
 ```
 
