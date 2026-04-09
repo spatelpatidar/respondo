@@ -10,7 +10,7 @@ end
 require "respondo"
 
 RSpec.configure do |config|
-  config.example_status_persistence_file_path = "spec/examples.txt"
+  config.example_status_persistence_file_path = "spec/respondo_test.txt"
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end

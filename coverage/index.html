@@ -13,7 +13,7 @@
       <img src="./assets/0.13.2/loading.gif" alt="loading"/>
     </div>
     <div id="wrapper" class="hide">
-      <div class="timestamp">Generated <abbr class="timeago" title="2026-04-08T10:49:34+05:30">2026-04-08T10:49:34+05:30</abbr></div>
+      <div class="timestamp">Generated <abbr class="timeago" title="2026-04-09T16:07:01+05:30">2026-04-09T16:07:01+05:30</abbr></div>
       <ul class="group_tabs"></ul>
 
       <div id="content">
@@ -22,14 +22,14 @@
     <span class="group_name">All Files</span>
     (<span class="covered_percent">
       <span class="green">
-  98.5%
+  98.96%
 </span>
 
      </span>
      covered at
      <span class="covered_strength">
        <span class="green">
-         44.61
+         51.0
        </span>
     </span> hits/line
     )
@@ -38,15 +38,15 @@
   <a name="AllFiles"></a>
 
   <div>
-    <b>6</b> files in total.
+    <b>7</b> files in total.
   </div>
 
   <div class="t-line-summary">
-    <b>266</b> relevant lines,
-    <span class="green"><b>262</b> lines covered</span> and
-    <span class="red"><b>4</b> lines missed. </span>
+    <b>480</b> relevant lines,
+    <span class="green"><b>475</b> lines covered</span> and
+    <span class="red"><b>5</b> lines missed. </span>
     (<span class="green">
-  98.5%
+  98.96%
 </span>
 )
   </div>
@@ -70,13 +70,24 @@
       <tbody>
         
           <tr class="t-file">
+            <td class="strong t-file__name"><a href="#4b89091088e8676e928ba62749fb7102c1672c82" class="src_link" title="lib/generators/respondo/install/install_generator.rb">lib/generators/respondo/install/install_generator.rb</a></td>
+            <td class="green strong cell--number t-file__coverage">99.53 %</td>
+            <td class="cell--number">350</td>
+            <td class="cell--number">214</td>
+            <td class="cell--number">213</td>
+            <td class="cell--number">1</td>
+            <td class="cell--number">57.76</td>
+            
+          </tr>
+        
+          <tr class="t-file">
             <td class="strong t-file__name"><a href="#f3d92225d2f3f2c711827df1f46504ca6c807f93" class="src_link" title="lib/respondo.rb">lib/respondo.rb</a></td>
             <td class="green strong cell--number t-file__coverage">100.00 %</td>
             <td class="cell--number">45</td>
             <td class="cell--number">14</td>
             <td class="cell--number">14</td>
             <td class="cell--number">0</td>
-            <td class="cell--number">84.14</td>
+            <td class="cell--number">86.71</td>
             
           </tr>
         
@@ -87,7 +98,7 @@
             <td class="cell--number">15</td>
             <td class="cell--number">15</td>
             <td class="cell--number">0</td>
-            <td class="cell--number">101.80</td>
+            <td class="cell--number">116.20</td>
             
           </tr>
         
@@ -151,6 +162,3963 @@
       </div>
 
       <div class="source_files">
+      
+        <div class="source_table" id="4b89091088e8676e928ba62749fb7102c1672c82">
+  <div class="header">
+    <h3>lib/generators/respondo/install/install_generator.rb</h3>
+    <h4>
+      <span class="green">
+  99.53%
+</span>
+
+      lines covered
+    </h4>
+
+    
+
+    <div class="t-line-summary">
+      <b>214</b> relevant lines.
+      <span class="green"><b>213</b> lines covered</span> and
+      <span class="red"><b>1</b> lines missed.</span>
+    </div>
+
+    
+
+  </div>
+
+  <pre>
+    <ol>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="1">
+            
+
+            
+
+            <code class="ruby"># frozen_string_literal: true</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="2">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="3">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">require &quot;rails/generators&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="4">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="5">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">module Respondo</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="6">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">  module Generators</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="7">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">    class InstallGenerator &lt; Rails::Generators::Base</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="8">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      desc &quot;Interactive setup — creates config/initializers/respondo.rb with your preferences.&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="9">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="10">
+            
+
+            
+
+            <code class="ruby">      # We bypass Thor&#39;s `say` entirely for all display output and use</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="11">
+            
+
+            
+
+            <code class="ruby">      # $stdout.puts / print directly. This prevents Thor from re-echoing</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="12">
+            
+
+            
+
+            <code class="ruby">      # buffered output and causing duplicate lines in the terminal.</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="13">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="14">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def run_interactive_setup</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="15">
+            
+
+            
+
+            <code class="ruby">        # out LOGO</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="16">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out logo_with_version</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="17">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="18">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  This wizard will generate config/initializers/respondo.rb&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="19">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  tailored to your project — no need to read the full README.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="20">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="21">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out line(yellow(&quot;  All settings can be changed later by editing the initializer.&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="22">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="23">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="24">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="25">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        unless confirm(&quot;  Ready to configure Respondo? (y/n) &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="26">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="27">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          out line(yellow(&quot;  Skipped. Run this again any time:&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="28">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          out line(&quot;    rails generate respondo:install&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="29">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="30">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          return</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="31">
+            
+
+            
+
+            <code class="ruby">        end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="32">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="33">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg = {}</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="34">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="35">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_project_info</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="36">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_messages</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="37">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_request_id</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="38">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_camelize</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="39">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_default_meta</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="40">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        step_serializer</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="41">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="42">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        print_summary</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="43">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        write_initializer</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="44">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        print_done</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="45">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="46">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="47">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      private</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="48">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="49">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="50">
+            
+
+            
+
+            <code class="ruby">      # Steps</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="51">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="52">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="53">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_project_info</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="54">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Project Info&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="55">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Project / app name&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="56">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(yellow(&quot;  (Used as a comment header in the initializer)&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="57">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:project_name] = prompt_default(Rails.application.class.module_parent_name)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="58">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="59">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="60">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  API version&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="61">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(yellow(&quot;  (e.g. v1 — added to every response meta block)&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="62">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:api_version] = prompt_default(&quot;v1&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="63">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="64">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="65">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_messages</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="66">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Response Messages&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="67">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Fallback messages used when you don&#39;t pass message: explicitly.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="68">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="69">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="70">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Default success message&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="71">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:default_success_message] = prompt_default(&quot;Success&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="72">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="73">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="74">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Default error message&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="75">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:default_error_message] = prompt_default(&quot;An error occurred&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="76">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="77">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="78">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_request_id</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="79">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Request ID&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="80">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  When enabled, Rails request.request_id is included in every&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="81">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  response meta block — useful for log correlation and debugging.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="82">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="83">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:include_request_id] = confirm(&quot;  Include request_id in every response? (y/n) &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="84">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="85">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="86">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_camelize</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="87">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Key Format&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="88">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  When enabled, all JSON keys are camelCased:&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="89">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(yellow(&#39;    { &quot;createdAt&quot;: &quot;...&quot;, &quot;userId&quot;: 1 }&#39;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="90">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Recommended for Flutter, React, and JavaScript clients.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="91">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="92">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:camelize_keys] = confirm(&quot;  Camelize all response keys? (y/n) &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="93">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="94">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="95">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_default_meta</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="96">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Global Meta Fields&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="97">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Static key=value pairs merged into the meta block of EVERY response.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="98">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Example:  platform=mobile   environment=production&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="99">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="100">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(yellow(&quot;  Note: api_version from above is already included automatically.&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="101">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="102">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="103">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:default_meta] = {}</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="104">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        return unless confirm(&quot;  Add extra global meta fields? (y/n) &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="105">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="106">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="107">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Enter key=value one at a time. Blank line to finish.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="108">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="109">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="110">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">        loop do</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="15" data-linenumber="111">
+            
+              <span class="hits">15</span>
+            
+
+            
+
+            <code class="ruby">          $stdout.print cyan(&quot;    key=value › &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="15" data-linenumber="112">
+            
+              <span class="hits">15</span>
+            
+
+            
+
+            <code class="ruby">          raw = $stdin.gets.to_s.strip</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="15" data-linenumber="113">
+            
+              <span class="hits">15</span>
+            
+
+            
+
+            <code class="ruby">          break if raw.empty?</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="114">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="10" data-linenumber="115">
+            
+              <span class="hits">10</span>
+            
+
+            
+
+            <code class="ruby">          unless raw.include?(&quot;=&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="116">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">            out line(yellow(&quot;    Use key=value format (e.g. platform=mobile). Skipping.&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="117">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">            next</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="118">
+            
+
+            
+
+            <code class="ruby">          end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="119">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="120">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          key, value = raw.split(&quot;=&quot;, 2)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="121">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="122">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          next out line(yellow(&quot;    Use key=value format.&quot;)) if key.nil? || key.strip.empty?</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="123">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="124">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          k = key.strip</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="125">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          v = (value || &quot;&quot;).strip</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="126">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          @cfg[:default_meta][k] = v</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="8" data-linenumber="127">
+            
+              <span class="hits">8</span>
+            
+
+            
+
+            <code class="ruby">          out line(green(&quot;    ✓  #{k}: #{v.inspect}&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="128">
+            
+
+            
+
+            <code class="ruby">        end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="129">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="130">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="131">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def step_serializer</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="132">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out section(&quot;Custom Serializer&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="133">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  By default Respondo serializes ActiveRecord models, collections,&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="134">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  hashes, and arrays automatically.&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="135">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="136">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  You can override with any callable: -&gt;(obj) { MySerializer.new(obj).as_json }&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="137">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="138">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        @cfg[:custom_serializer] = confirm(&quot;  Add a custom serializer stub? (y/n) &quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="139">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="140">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="141">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="142">
+            
+
+            
+
+            <code class="ruby">      # Summary</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="143">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="144">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="145">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def print_summary</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="146">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="147">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="148">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(cyan(&quot;  Configuration Summary&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="149">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="150">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="151">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Project&quot;,            @cfg[:project_name]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="152">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;API version&quot;,        @cfg[:api_version]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="153">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Success message&quot;,    @cfg[:default_success_message]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="154">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Error message&quot;,      @cfg[:default_error_message]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="155">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Include request_id&quot;, @cfg[:include_request_id]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="156">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Camelize keys&quot;,      @cfg[:camelize_keys]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="157">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        summary_row &quot;Custom serializer&quot;,  @cfg[:custom_serializer]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="158">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="159">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        unless @cfg[:default_meta].empty?</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="160">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">          out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="5" data-linenumber="161">
+            
+              <span class="hits">5</span>
+            
+
+            
+
+            <code class="ruby">          out line(&quot;  Global meta:&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="13" data-linenumber="162">
+            
+              <span class="hits">13</span>
+            
+
+            
+
+            <code class="ruby">          @cfg[:default_meta].each { |k, v| out line(&quot;    #{k}: #{v.inspect}&quot;) }</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="163">
+            
+
+            
+
+            <code class="ruby">        end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="164">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="165">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="166">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="167">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="168">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="169">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="170">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def summary_row(label, value)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="245" data-linenumber="171">
+            
+              <span class="hits">245</span>
+            
+
+            
+
+            <code class="ruby">        bool_true = value == true</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="245" data-linenumber="172">
+            
+              <span class="hits">245</span>
+            
+
+            
+
+            <code class="ruby">        val_str   = bool_true ? green(value.inspect) : yellow(value.inspect)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="245" data-linenumber="173">
+            
+              <span class="hits">245</span>
+            
+
+            
+
+            <code class="ruby">        out &quot;  #{(&quot;#{label}:&quot;).ljust(24)}#{val_str}\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="174">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="175">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="176">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="177">
+            
+
+            
+
+            <code class="ruby">      # Write file</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="178">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="179">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="180">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def write_initializer</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="181">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        dir  = File.join(destination_root, &quot;config&quot;, &quot;initializers&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="182">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        path = File.join(dir, &quot;respondo.rb&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="183">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        FileUtils.mkdir_p(dir)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="184">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        File.write(path, build_content)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="185">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(green(&quot;  ✅  Created config/initializers/respondo.rb&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="186">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="187">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="188">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="189">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def build_content</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="190">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        meta = { &quot;api_version&quot; =&gt; @cfg[:api_version] }.merge(@cfg[:default_meta])</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="191">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b    = Lines.new</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="192">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="193">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;# frozen_string_literal: true&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="194">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="195">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;# Respondo initializer — #{@cfg[:project_name]}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="196">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;# Generated by: rails generate respondo:install&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="197">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;# Respondo version: #{Respondo::VERSION}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="198">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;# Docs: https://github.com/your-org/respondo&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="199">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="200">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;Respondo.configure do |config|&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="201">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="202">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # ── Messages ─────────────────────────────────────────────────────────&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="203">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # Fallback when render_success / render_error is called without message:&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="204">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  config.default_success_message = #{@cfg[:default_success_message].inspect}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="205">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  config.default_error_message   = #{@cfg[:default_error_message].inspect}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="206">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="207">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # ── Request ID ───────────────────────────────────────────────────────&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="208">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # Includes Rails request.request_id in every response meta block.&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="209">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  config.include_request_id = #{@cfg[:include_request_id]}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="210">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="211">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # ── Key Format ───────────────────────────────────────────────────────&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="212">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # CamelCase all JSON keys — recommended for Flutter / JS clients.&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="213">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  config.camelize_keys = #{@cfg[:camelize_keys]}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="214">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="215">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # ── Global Meta ──────────────────────────────────────────────────────&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="216">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;  # Static fields merged into the meta block of every response.&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="217">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="218">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        if meta.empty?</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="missed" data-hits="0" data-linenumber="219">
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  config.default_meta = {}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="220">
+            
+
+            
+
+            <code class="ruby">        else</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="221">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  config.default_meta = {&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="222">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">          meta.each_with_index do |(k, v), i|</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="43" data-linenumber="223">
+            
+              <span class="hits">43</span>
+            
+
+            
+
+            <code class="ruby">            comma = i &lt; meta.size - 1 ? &quot;,&quot; : &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="43" data-linenumber="224">
+            
+              <span class="hits">43</span>
+            
+
+            
+
+            <code class="ruby">            b &lt;&lt; &quot;    #{k}: #{v.inspect}#{comma}&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="225">
+            
+
+            
+
+            <code class="ruby">          end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="226">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  }&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="227">
+            
+
+            
+
+            <code class="ruby">        end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="228">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="229">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        if @cfg[:custom_serializer]</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="230">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="231">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  # ── Custom Serializer ────────────────────────────────────────────────&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="232">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  # Replace the lambda body with your own serialization logic.&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="233">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  # Examples:&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="234">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  #   ActiveModelSerializers: -&gt;(obj) { SomeSerializer.new(obj).as_json }&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="235">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  #   Blueprinter:            -&gt;(obj) { UserBlueprint.render_as_hash(obj) }&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="236">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  #&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2" data-linenumber="237">
+            
+              <span class="hits">2</span>
+            
+
+            
+
+            <code class="ruby">          b &lt;&lt; &quot;  # config.serializer = -&gt;(obj) { MySerializer.new(obj).as_json }&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="238">
+            
+
+            
+
+            <code class="ruby">        end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="239">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="240">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="241">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;end&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="242">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b &lt;&lt; &quot;&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="243">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        b.to_s</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="244">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="245">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="246">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="247">
+            
+
+            
+
+            <code class="ruby">      # Done</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="248">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="249">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="250">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def print_done</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="251">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="252">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="253">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(cyan(&quot;  🎉  Respondo is ready!&quot;))</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="254">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="255">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;  Next steps:&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="256">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;    1. Review   config/initializers/respondo.rb&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="257">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;    2. Use      render_success / render_error in your controllers&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="258">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out line(&quot;    3. Re-run   rails generate respondo:install  to regenerate&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="259">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="260">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="35" data-linenumber="261">
+            
+              <span class="hits">35</span>
+            
+
+            
+
+            <code class="ruby">        out blank</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="262">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="263">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="264">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="265">
+            
+
+            
+
+            <code class="ruby">      # Output primitives — all output goes through $stdout, never through Thor</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="266">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="267">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="268">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def out(str)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2482" data-linenumber="269">
+            
+              <span class="hits">2482</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.print str</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="2482" data-linenumber="270">
+            
+              <span class="hits">2482</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.flush</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="271">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="272">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="273">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def line(str) = &quot;#{str}\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="274">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def blank     = &quot;\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="275">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="276">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def divider</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="249" data-linenumber="277">
+            
+              <span class="hits">249</span>
+            
+
+            
+
+            <code class="ruby">        &quot;  #{cyan(&quot;─&quot; * 68)}\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="278">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="279">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="280">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def section(title)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="210" data-linenumber="281">
+            
+              <span class="hits">210</span>
+            
+
+            
+
+            <code class="ruby">        dashes = &quot;─&quot; * [0, 54 - title.length].max</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="210" data-linenumber="282">
+            
+              <span class="hits">210</span>
+            
+
+            
+
+            <code class="ruby">        &quot;\n  #{cyan(&quot;┌─ #{title} #{dashes}┐&quot;)}\n\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="283">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="284">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="285">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def prompt_default(default)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="140" data-linenumber="286">
+            
+              <span class="hits">140</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.print &quot;  #{cyan(&quot;›&quot;)} #{yellow(&quot;[#{default}]&quot;)}: &quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="140" data-linenumber="287">
+            
+              <span class="hits">140</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.flush</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="140" data-linenumber="288">
+            
+              <span class="hits">140</span>
+            
+
+            
+
+            <code class="ruby">        result = $stdin.gets.to_s.strip</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="140" data-linenumber="289">
+            
+              <span class="hits">140</span>
+            
+
+            
+
+            <code class="ruby">        result.empty? ? default.to_s : result</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="290">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="291">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="292">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def confirm(question)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="177" data-linenumber="293">
+            
+              <span class="hits">177</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.print question</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="177" data-linenumber="294">
+            
+              <span class="hits">177</span>
+            
+
+            
+
+            <code class="ruby">        $stdout.flush</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="177" data-linenumber="295">
+            
+              <span class="hits">177</span>
+            
+
+            
+
+            <code class="ruby">        $stdin.gets.to_s.strip.downcase.start_with?(&quot;y&quot;)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="296">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="297">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="298">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="299">
+            
+
+            
+
+            <code class="ruby">      # ANSI colors</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="300">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="301">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="302">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def cyan(t)   = &quot;\e[36m#{t}\e[0m&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="303">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def green(t)  = &quot;\e[32m#{t}\e[0m&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="304">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def yellow(t) = &quot;\e[33m#{t}\e[0m&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="305">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="306">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="307">
+            
+
+            
+
+            <code class="ruby">      # ASCII logo</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="308">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="309">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="310">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      LOGOS = &lt;&lt;~&#39;LOGO&#39;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="311">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="312">
+            
+
+            
+
+            <code class="ruby">          ██████╗ ███████╗███████╗██████╗  ██████╗ ███╗   ██╗██████╗  ██████╗</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="313">
+            
+
+            
+
+            <code class="ruby">          ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔═══██╗████╗  ██║██╔══██╗██╔═══██╗</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="314">
+            
+
+            
+
+            <code class="ruby">          ██████╔╝█████╗  ███████╗██████╔╝██║   ██║██╔██╗ ██║██║  ██║██║   ██║</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="315">
+            
+
+            
+
+            <code class="ruby">          ██╔══██╗██╔══╝  ╚════██║██╔═══╝ ██║   ██║██║╚██╗██║██║  ██║██║   ██║</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="316">
+            
+
+            
+
+            <code class="ruby">          ██║  ██║███████╗███████║██║     ╚██████╔╝██║ ╚████║██████╔╝╚██████╔╝</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="317">
+            
+
+            
+
+            <code class="ruby">          ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚═════╝  ╚═════╝</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="318">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="319">
+            
+
+            
+
+            <code class="ruby">                        Smart JSON API Response Formatter for Rails</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="320">
+            
+
+            
+
+            <code class="ruby">                                     ─── v#{Respondo::VERSION} ───</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="321">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="322">
+            
+
+            
+
+            <code class="ruby">      LOGO</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="323">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="324">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      def logo_with_version</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="37" data-linenumber="325">
+            
+              <span class="hits">37</span>
+            
+
+            
+
+            <code class="ruby">        green(&lt;&lt;~LOGO)</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="326">
+            
+
+            
+
+            <code class="ruby">          </code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="327">
+            
+
+            
+
+            <code class="ruby">          ██████╗ ███████╗███████╗██████╗  ██████╗ ███╗   ██╗██████╗  ██████╗</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="328">
+            
+
+            
+
+            <code class="ruby">          ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔═══██╗████╗  ██║██╔══██╗██╔═══██╗</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="329">
+            
+
+            
+
+            <code class="ruby">          ██████╔╝█████╗  ███████╗██████╔╝██║   ██║██╔██╗ ██║██║  ██║██║   ██║</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="330">
+            
+
+            
+
+            <code class="ruby">          ██╔══██╗██╔══╝  ╚════██║██╔═══╝ ██║   ██║██║╚██╗██║██║  ██║██║   ██║</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="331">
+            
+
+            
+
+            <code class="ruby">          ██║  ██║███████╗███████║██║     ╚██████╔╝██║ ╚████║██████╔╝╚██████╔╝</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="332">
+            
+
+            
+
+            <code class="ruby">          ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚═════╝  ╚═════╝</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="333">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="334">
+            
+
+            
+
+            <code class="ruby">                      Smart JSON API Response Formatter for Rails</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="335">
+            
+
+            
+
+            <code class="ruby">                                ─── v#{Respondo::VERSION} ───</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="336">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="337">
+            
+
+            
+
+            <code class="ruby">        LOGO</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="338">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="339">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="340">
+            
+
+            
+
+            <code class="ruby">      # Simple line buffer for building file content</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="341">
+            
+
+            
+
+            <code class="ruby">      # =========================================================================</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="342">
+            
+
+            
+
+            <code class="ruby"></code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="343">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">      class Lines</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="36" data-linenumber="344">
+            
+              <span class="hits">36</span>
+            
+
+            
+
+            <code class="ruby">        def initialize = (@buf = [])</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="345">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">        def &lt;&lt;(str)    = @buf &lt;&lt; str</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="covered" data-hits="1" data-linenumber="346">
+            
+              <span class="hits">1</span>
+            
+
+            
+
+            <code class="ruby">        def to_s       = @buf.join(&quot;\n&quot;) + &quot;\n&quot;</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="347">
+            
+
+            
+
+            <code class="ruby">      end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="348">
+            
+
+            
+
+            <code class="ruby">    end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="349">
+            
+
+            
+
+            <code class="ruby">  end</code>
+          </li>
+        </div>
+      
+        <div>
+          <li class="never" data-hits="" data-linenumber="350">
+            
+
+            
+
+            <code class="ruby">end</code>
+          </li>
+        </div>
+      
+    </ol>
+  </pre>
+</div>
+
       
         <div class="source_table" id="f3d92225d2f3f2c711827df1f46504ca6c807f93">
   <div class="header">
@@ -583,9 +4551,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="252" data-linenumber="39">
+          <li class="covered" data-hits="288" data-linenumber="39">
             
-              <span class="hits">252</span>
+              <span class="hits">288</span>
             
 
             
@@ -1076,9 +5044,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="38">
+          <li class="covered" data-hits="289" data-linenumber="38">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             
@@ -1088,9 +5056,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="39">
+          <li class="covered" data-hits="289" data-linenumber="39">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             
@@ -1100,9 +5068,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="40">
+          <li class="covered" data-hits="289" data-linenumber="40">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             
@@ -1112,9 +5080,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="41">
+          <li class="covered" data-hits="289" data-linenumber="41">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             
@@ -1124,9 +5092,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="42">
+          <li class="covered" data-hits="289" data-linenumber="42">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             
@@ -1136,9 +5104,9 @@
         </div>
       
         <div>
-          <li class="covered" data-hits="253" data-linenumber="43">
+          <li class="covered" data-hits="289" data-linenumber="43">
             
-              <span class="hits">253</span>
+              <span class="hits">289</span>
             
 
             

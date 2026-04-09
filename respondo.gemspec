@@ -19,11 +19,20 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
 
+  spec.metadata = {
+    "homepage_uri" => spec.homepage,
+    "source_code_uri" => spec.homepage,
+    "changelog_uri" => "#{spec.homepage}/blob/main/CHANGELOG.md",
+    "bug_tracker_uri" => "#{spec.homepage}/auditron/issues",
+    "rubygems_mfa_required" => "true"
+  }
+
   spec.files = Dir["lib/**/*.rb", "README.md", "LICENSE.txt", "CHANGELOG.md", "respondo.gemspec"]
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "rspec",        "~> 3.12"
-  spec.add_development_dependency "rake",         "~> 13.0"
-  spec.add_development_dependency "activesupport","~> 7.0"
-  spec.add_development_dependency 'simplecov', '~> 0.22'
+  spec.add_development_dependency "railties",        "~> 8.1.3"
+  spec.add_development_dependency "rspec",           "~> 3.12"
+  spec.add_development_dependency "rake",            "~> 13.0"
+  spec.add_development_dependency "activesupport",   "~> 8.1.3"
+  spec.add_development_dependency 'simplecov',       "~> 0.22"
 end
