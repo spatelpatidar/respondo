@@ -143,8 +143,9 @@ Error responses additionally include:
 
 | Key      | Type | Description                          |
 |----------|------|--------------------------------------|
-| `errors` | Hash | Field-level errors `{field: [msgs]}` |
-| `errors` | Hash | Field-level errors `{field: msgs}` |
+| `errors` | Hash | Field-level errors `{ field: ["message", ...] }` |
+
+> **`errors` is optional.** Pass it when you want to surface field-level detail to the client (e.g. form validation, token issues). Omit it for simple human-readable-only responses — `message` alone is perfectly valid.
 
 ---
 
@@ -304,222 +305,386 @@ render_permanent_redirect(message: "Permanently moved — update your bookmarks"
 
 ### 4xx — Client Error Helpers
 
+> **Two usage patterns for every error helper:**
+> - **Message only** — a human-readable string shown to the end user.
+> - **Message + errors** — add `errors:` when you also need field-level detail for the client to act on (e.g. highlight a form field, log a specific token issue). `errors` is a Hash of `{ field: ["message", ...] }`.
+
 #### `render_bad_request` — 400 Bad Request
 ```ruby
+# Message only
 render_bad_request(message: "The 'date' parameter is required")
-render_bad_request(message: "Invalid input", errors: { date: ["must be a valid date"] })
+
+# Message + errors
+render_bad_request(message: "Invalid input", errors: { date: "must be a valid date"})
 ```
 
 #### `render_unauthorized` — 401 Unauthorized
 ```ruby
+# Message only
 render_unauthorized(message: "Please log in to continue")
-render_unauthorized(message: "Token has expired")
+
+# Message + errors
+render_unauthorized(message: "Token has expired", errors: { token: "has expired, please log in again"})
 ```
 
 #### `render_payment_required` — 402 Payment Required
 ```ruby
+# Message only
 render_payment_required(message: "Upgrade to Pro to access this feature")
+
+# Message + errors
+render_payment_required( message: "Upgrade to Pro to access this feature", errors: { plan: "must be Pro or higher to access this feature"})
 ```
 
 #### `render_forbidden` — 403 Forbidden
 ```ruby
+# Message only
 render_forbidden(message: "You can only edit your own posts")
+
+# Message + errors
+render_forbidden(message: "You can only edit your own posts",errors: { post: "does not belong to you" })
 ```
 
 #### `render_not_found` — 404 Not Found
 ```ruby
+# Message only
 render_not_found(message: "User not found")
-render_not_found(message: "Post ##{params[:id]} does not exist")
+
+# Message + errors
+render_not_found(message: "User not found", errors: { id: "no user exists with this ID" })
 ```
 
 #### `render_method_not_allowed` — 405
 ```ruby
+# Message only
 render_method_not_allowed(message: "This endpoint only accepts POST requests")
+
+# Message + errors
+render_method_not_allowed(message: "This endpoint only accepts POST requests",errors: { method: "GET is not allowed, use POST" })
 ```
 
 #### `render_not_acceptable` — 406
 ```ruby
+# Message only
 render_not_acceptable(message: "Only application/json is supported")
+
+# Message + errors
+render_not_acceptable(message: "Only application/json is supported", errors: { content_type: "must be application/json" })
 ```
 
 #### `render_proxy_auth_required` — 407
 ```ruby
+# Message only
 render_proxy_auth_required(message: "Authenticate with the proxy first")
+
+# Message + errors
+render_proxy_auth_required(message: "Authenticate with the proxy first", errors: { proxy_token: "is missing or invalid"})
 ```
 
 #### `render_request_timeout` — 408
 ```ruby
+# Message only
 render_request_timeout(message: "The query took too long. Try a smaller date range.")
+
+# Message + errors
+render_request_timeout( message: "The query took too long. Try a smaller date range.", errors: { date_range: "must span 90 days or fewer" })
 ```
 
 #### `render_conflict` — 409 Conflict
 ```ruby
+# Message only
 render_conflict(message: "Email address is already registered")
-render_conflict(message: "Duplicate entry", errors: { email: ["has already been taken"] })
+
+# Message + errors
+render_conflict(message: "Email address is already registered",errors: { email: "has already been taken" })
 ```
 
 #### `render_gone` — 410 Gone
 ```ruby
+# Message only
 render_gone(message: "This account has been permanently deleted")
+
+# Message + errors
+render_gone(message: "This account has been permanently deleted",errors: { account: ["no longer exists and cannot be recovered"] })
 ```
 
 #### `render_length_required` — 411
 ```ruby
+# Message only
 render_length_required(message: "Content-Length header is required")
+
+# Message + errors
+render_length_required(message: "Content-Length header is required",errors: { content_length: ["header is missing from the request"] })
 ```
 
 #### `render_precondition_failed` — 412
 ```ruby
+# Message only
 render_precondition_failed(message: "Resource has been modified since your last request")
+
+# Message + errors
+render_precondition_failed(message: "Resource has been modified since your last request",errors: { etag: ["does not match the current resource version"] })
 ```
 
 #### `render_payload_too_large` — 413
 ```ruby
+# Message only
 render_payload_too_large(message: "File exceeds the 10 MB upload limit")
+
+# Message + errors
+render_payload_too_large(message: "File exceeds the 10 MB upload limit",errors: { file: ["must be smaller than 10 MB"] })
 ```
 
 #### `render_uri_too_long` — 414
 ```ruby
+# Message only
 render_uri_too_long(message: "That URL is too long to process")
+
+# Message + errors
+render_uri_too_long(message: "That URL is too long to process",errors: { url: ["must not exceed 2048 characters"] })
 ```
 
 #### `render_unsupported_media_type` — 415
 ```ruby
+# Message only
 render_unsupported_media_type(message: "Please send requests as application/json")
+
+# Message + errors
+render_unsupported_media_type(message: "Please send requests as application/json",errors: { content_type: ["must be application/json, got text/xml"] })
 ```
 
 #### `render_range_not_satisfiable` — 416
 ```ruby
+# Message only
 render_range_not_satisfiable(message: "Requested byte range is out of bounds")
+
+# Message + errors
+render_range_not_satisfiable(message: "Requested byte range is out of bounds", errors: { range: ["exceeds the total file size"] })
 ```
 
 #### `render_expectation_failed` — 417
 ```ruby
+# Message only
 render_expectation_failed(message: "Expect header value cannot be met")
+
+# Message + errors
+render_expectation_failed(message: "Expect header value cannot be met",errors: { expect: ["100-continue is not supported on this endpoint"] })
 ```
 
 #### `render_im_a_teapot` — 418
 ```ruby
+# Message only
 render_im_a_teapot(message: "I'm a teapot — I cannot brew coffee")
+
+# Message + errors
+render_im_a_teapot(message: "I'm a teapot — I cannot brew coffee",errors: { beverage: ["coffee is not supported, try tea"] })
 ```
 
 #### `render_misdirected_request` — 421
 ```ruby
+# Message only
 render_misdirected_request(message: "Request sent to the wrong server")
+
+# Message + errors
+render_misdirected_request(message: "Request sent to the wrong server",errors: { host: ["this server does not handle requests for this host"] })
 ```
 
 #### `render_unprocessable` — 422 Unprocessable Entity
 Validation errors. The most commonly used error helper in Rails APIs.
 
 ```ruby
-render_unprocessable(message: "Validation failed", errors: user.errors)
-render_unprocessable(message: "Invalid data", errors: { name: ["can't be blank"] })
+# Message only
+render_unprocessable(message: "Validation failed")
+
+# Message + errors — pass an ActiveModel::Errors object directly
+render_unprocessable(message: "Validation failed",errors: user.errors)
+
+# Message + errors — pass a plain hash
+render_unprocessable(message: "Invalid data",errors: { name: ["can't be blank"], email: ["is invalid"] })
 ```
 
 #### `render_locked` — 423
 ```ruby
+# Message only
 render_locked(message: "This record is locked by another user")
+
+# Message + errors
+render_locked(message: "This record is locked by another user",errors: { record: ["is currently locked, try again later"] })
 ```
 
 #### `render_failed_dependency` — 424
 ```ruby
+# Message only
 render_failed_dependency(message: "Prerequisite resource creation failed")
+
+# Message + errors
+render_failed_dependency(message: "Prerequisite resource creation failed",errors: { dependency: ["parent record must exist before creating this resource"] })
 ```
 
 #### `render_too_early` — 425
 ```ruby
+# Message only
 render_too_early(message: "Request may be a replay — rejected for safety")
+
+# Message + errors
+render_too_early(message: "Request may be a replay — rejected for safety",errors: { request: ["early data replay detected, resend after handshake"] })
 ```
 
 #### `render_upgrade_required` — 426
 ```ruby
+# Message only
 render_upgrade_required(message: "Please upgrade to TLS 1.3")
+
+# Message + errors
+render_upgrade_required(message: "Please upgrade to TLS 1.3",errors: { protocol: ["TLS 1.2 is no longer supported, upgrade to TLS 1.3"] })
 ```
 
 #### `render_precondition_required` — 428
 ```ruby
+# Message only
 render_precondition_required(message: "Include an If-Match header with your request")
+
+# Message + errors
+render_precondition_required(message: "Include an If-Match header with your request",errors: { if_match: ["header is required to prevent lost updates"] })
 ```
 
 #### `render_too_many_requests` — 429
 ```ruby
+# Message only
 render_too_many_requests(message: "You have exceeded 100 requests per minute.")
-render_too_many_requests(message: "Rate limit hit", meta: { retry_after: 60 })
+
+# Message + errors
+render_too_many_requests(message: "Rate limit exceeded",errors: { rate_limit: ["100 requests per minute allowed, retry after 60 seconds"] },meta: { retry_after: 60 })
 ```
 
 #### `render_request_header_fields_too_large` — 431
 ```ruby
+# Message only
 render_request_header_fields_too_large(message: "Cookie header is too large")
+
+# Message + errors
+render_request_header_fields_too_large(message: "Cookie header is too large",errors: { cookie: ["must not exceed 4096 bytes"] })
 ```
 
 #### `render_unavailable_for_legal_reasons` — 451
 ```ruby
+# Message only
 render_unavailable_for_legal_reasons(message: "This content is blocked in your region")
+
+# Message + errors
+render_unavailable_for_legal_reasons(message: "This content is blocked in your region",errors: { region: ["content is not licensed for distribution in your country"] })
 ```
 
 ---
 
 ### 5xx — Server Error Helpers
 
+> **Two usage patterns for every error helper:**
+> - **Message only** — a human-readable string shown to the end user.
+> - **Message + errors** — add `errors:` when you need to surface internal detail for debugging or logging (e.g. which downstream service failed). `errors` is a Hash of `{ field: ["message", ...] }`.
+
 #### `render_server_error` — 500 Internal Server Error
 ```ruby
+# Message only
 render_server_error(message: "Something went wrong. Our team has been notified.")
+
+# Message + errors
+render_server_error(message: "Something went wrong. Our team has been notified.",errors: { server: ["unexpected exception in OrdersController#create"] })
 
 # Common pattern — rescue unexpected exceptions
 rescue StandardError => e
   Rails.logger.error(e)
-  render_server_error("An unexpected error occurred")
+  render_server_error(message: "An unexpected error occurred",errors: { server: [e.message] })
 ```
 
 #### `render_not_implemented` — 501
 ```ruby
+# Message only
 render_not_implemented(message: "CSV export is coming soon")
+
+# Message + errors
+render_not_implemented(message: "CSV export is coming soon",errors: { format: ["csv export is not yet implemented, use json"] })
 ```
 
 #### `render_bad_gateway` — 502
 ```ruby
+# Message only
 render_bad_gateway(message: "Payment gateway is currently unavailable")
+
+# Message + errors
+render_bad_gateway(message: "Payment gateway is currently unavailable",errors: { gateway: ["Stripe returned a 502, please try again"] })
 ```
 
 #### `render_service_unavailable` — 503
 ```ruby
+# Message only
 render_service_unavailable(message: "Down for maintenance. Back in 30 minutes.")
-render_service_unavailable(message: "Maintenance window", meta: { retry_after: 1800 })
+
+# Message + errors
+render_service_unavailable(message: "Down for maintenance. Back in 30 minutes.",errors: { service: ["scheduled maintenance window until 03:00 UTC"] },meta: { retry_after: 1800 })
 ```
 
 #### `render_gateway_timeout` — 504
 ```ruby
+# Message only
 render_gateway_timeout(message: "The payment processor did not respond in time.")
+
+# Message + errors
+render_gateway_timeout(message: "The payment processor did not respond in time.",errors: { gateway: ["upstream timeout after 30 seconds, you have not been charged"] })
 ```
 
 #### `render_http_version_not_supported` — 505
 ```ruby
+# Message only
 render_http_version_not_supported(message: "Only HTTP/1.1 and HTTP/2 are supported")
+
+# Message + errors
+render_http_version_not_supported(message: "Only HTTP/1.1 and HTTP/2 are supported",errors: { http_version: ["HTTP/1.0 is not supported"] })
 ```
 
 #### `render_variant_also_negotiates` — 506
 ```ruby
+# Message only
 render_variant_also_negotiates(message: "Server content-negotiation loop detected")
+
+# Message + errors
+render_variant_also_negotiates(message: "Server content-negotiation loop detected",errors: { variant: ["misconfigured content negotiation caused an infinite loop"] })
 ```
 
 #### `render_insufficient_storage` — 507
 ```ruby
+# Message only
 render_insufficient_storage(message: "Disk quota exceeded on this node")
+
+# Message + errors
+render_insufficient_storage(message: "Disk quota exceeded on this node",errors: { storage: ["upload failed, node has 0 bytes remaining"] })
 ```
 
 #### `render_loop_detected` — 508
 ```ruby
+# Message only
 render_loop_detected(message: "Infinite redirect loop detected")
+
+# Message + errors
+render_loop_detected(message: "Infinite redirect loop detected",errors: { redirect: ["request visited the same URL more than 10 times"] })
 ```
 
 #### `render_not_extended` — 510
 ```ruby
+# Message only
 render_not_extended(message: "Further extensions required to fulfil this request")
+
+# Message + errors
+render_not_extended(message: "Further extensions required to fulfil this request",errors: { extension: ["mandatory extension 'auth' is missing from the request"] })
 ```
 
 #### `render_network_authentication_required` — 511
 ```ruby
+# Message only
 render_network_authentication_required(message: "Sign in to the network portal first")
+
+# Message + errors
+render_network_authentication_required(message: "Sign in to the network portal first",errors: { network: ["captive portal authentication required before accessing the API"] })
 ```
 
 ---
@@ -539,12 +704,12 @@ class UsersController < ApplicationController
       data:       @users,
       message:    "Users fetched",
       pagination: {
-        per_page: per_page.to_i,
-        current_page: @users.current_page,
-        next_page: @users.next_page,
-        prev_page: @users.prev_page,
-        total_pages: @users.total_pages,
-        total_count: @users.total_count
+        per_page:         per_page.to_i,
+        current_page:     @users.current_page,
+        next_page:        @users.next_page,
+        prev_page:        @users.prev_page,
+        total_pages:      @users.total_pages,
+        total_count:      @users.total_count
       }
     )
   end
@@ -553,7 +718,7 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
     render_ok(data: user, message: "User found")
   rescue ActiveRecord::RecordNotFound
-    render_not_found(message: "User ##{params[:id]} not found", error: { id: "User #{params[:id]} not exist"})
+    render_not_found(message: "User ##{params[:id]} not found",errors: { id: ["no user exists with ID #{params[:id]}"] })
   end
 
   def create
@@ -569,7 +734,7 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
 
     unless user == current_user || current_user.admin?
-      render_forbidden(message: "You can only update your own profile", error: { profile: "update your own profile" })
+      render_forbidden( message: "You can only update your own profile", errors: { profile: ["you do not have permission to update this profile"] } )
       return
     end
 
@@ -595,11 +760,11 @@ class PaymentsController < ApplicationController
     result = PaymentGateway.charge(amount: params[:amount], token: params[:token])
     render_created(data: result, message: "Payment successful")
   rescue PaymentGateway::CardDeclined => e
-    render_unprocessable(message: e.message)
+    render_unprocessable(message: e.message, errors: { card: [e.message] })
   rescue PaymentGateway::Timeout
-    render_gateway_timeout(message: "Payment processor timed out. You have not been charged.")
+    render_gateway_timeout( message: "Payment processor timed out. You have not been charged.", errors: { gateway: ["upstream timeout, transaction was not processed"] } )
   rescue PaymentGateway::Error => e
-    render_bad_gateway(message: "Payment gateway error: #{e.message}")
+    render_bad_gateway( message: "Payment gateway error: #{e.message}", errors: { gateway: [e.message] })
   end
 
 end
@@ -700,7 +865,7 @@ render_ok(data: @user, message: "User found")
 
 ```ruby
 # Core
-render_success(data:, message:, meta:, code:, pagination:, code:, status:)
+render_success(data:, message:, meta:, pagination:, code:, status:)
 render_error(message:, errors:, code:, meta:, status:)
 
 # 1xx — Informational
@@ -710,7 +875,7 @@ render_processing(message:, meta:)
 render_early_hints(message:, meta:)
 
 # 2xx — Success
-render_success(data:, message:, meta:, pagination:, code: , status:)
+render_success(data:, message:, meta:, pagination:, code:, status:)
 render_ok(data:, message:, meta:, pagination:)
 render_created(data:, message:, meta:, pagination:)
 render_accepted(data:, message:, meta:, pagination:)
