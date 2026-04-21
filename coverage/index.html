@@ -13,7 +13,7 @@
       <img src="./assets/0.13.2/loading.gif" alt="loading"/>
     </div>
     <div id="wrapper" class="hide">
-      <div class="timestamp">Generated <abbr class="timeago" title="2026-04-12T13:16:59+05:30">2026-04-12T13:16:59+05:30</abbr></div>
+      <div class="timestamp">Generated <abbr class="timeago" title="2026-04-21T14:48:50+05:30">2026-04-21T14:48:50+05:30</abbr></div>
       <ul class="group_tabs"></ul>
 
       <div id="content">
@@ -116,7 +116,7 @@
           <tr class="t-file">
             <td class="strong t-file__name"><a href="#3d14ddebb2d13fc38ac07439d1af0018e070b358" class="src_link" title="lib/respondo/response_builder.rb">lib/respondo/response_builder.rb</a></td>
             <td class="green strong cell--number t-file__coverage">98.00 %</td>
-            <td class="cell--number">152</td>
+            <td class="cell--number">130</td>
             <td class="cell--number">50</td>
             <td class="cell--number">49</td>
             <td class="cell--number">1</td>
@@ -6709,7 +6709,7 @@
 
             
 
-            <code class="ruby">      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :ok)</code>
+            <code class="ruby">      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :no_content)</code>
           </li>
         </div>
       
@@ -11023,32 +11023,36 @@
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="100">
+          <li class="covered" data-hits="1" data-linenumber="100">
+            
+              <span class="hits">1</span>
             
 
             
 
-            <code class="ruby">    # def build_meta</code>
+            <code class="ruby">    def current_timestamp</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="101">
+          <li class="covered" data-hits="230" data-linenumber="101">
+            
+              <span class="hits">230</span>
             
 
             
 
-            <code class="ruby">    #   meta = { timestamp: current_timestamp }</code>
+            <code class="ruby">      if defined?(Time.current)</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="102">
+          <li class="missed" data-hits="0" data-linenumber="102">
             
 
             
 
-            <code class="ruby"></code>
+            <code class="ruby">        Time.current.iso8601</code>
           </li>
         </div>
       
@@ -11058,17 +11062,19 @@
 
             
 
-            <code class="ruby">    #   # Only extract pagination when caller has not explicitly disabled it</code>
+            <code class="ruby">      else</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="104">
+          <li class="covered" data-hits="230" data-linenumber="104">
+            
+              <span class="hits">230</span>
             
 
             
 
-            <code class="ruby">    #   if @pagination</code>
+            <code class="ruby">        Time.now.utc.iso8601</code>
           </li>
         </div>
       
@@ -11078,7 +11084,7 @@
 
             
 
-            <code class="ruby">    #     pagination = if @pagy</code>
+            <code class="ruby">      end</code>
           </li>
         </div>
       
@@ -11088,7 +11094,7 @@
 
             
 
-            <code class="ruby">    #       Pagination.extract(@pagy)</code>
+            <code class="ruby">    end</code>
           </li>
         </div>
       
@@ -11098,37 +11104,43 @@
 
             
 
-            <code class="ruby">    #     else</code>
+            <code class="ruby"></code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="108">
+          <li class="covered" data-hits="1" data-linenumber="108">
+            
+              <span class="hits">1</span>
             
 
             
 
-            <code class="ruby">    #       Pagination.extract(@raw_data)</code>
+            <code class="ruby">    def apply_camelize(hash)</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="109">
+          <li class="covered" data-hits="230" data-linenumber="109">
+            
+              <span class="hits">230</span>
             
 
             
 
-            <code class="ruby">    #     end</code>
+            <code class="ruby">      return hash unless Respondo.config.camelize_keys</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="110">
+          <li class="covered" data-hits="6" data-linenumber="110">
+            
+              <span class="hits">6</span>
             
 
             
 
-            <code class="ruby">    #     meta[:pagination] = pagination if pagination</code>
+            <code class="ruby">      camelize_hash(hash)</code>
           </li>
         </div>
       
@@ -11138,7 +11150,7 @@
 
             
 
-            <code class="ruby">    #   end</code>
+            <code class="ruby">    end</code>
           </li>
         </div>
       
@@ -11153,22 +11165,26 @@
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="113">
+          <li class="covered" data-hits="1" data-linenumber="113">
+            
+              <span class="hits">1</span>
             
 
             
 
-            <code class="ruby">    #   # Request ID (Rails only, opt-in via config)</code>
+            <code class="ruby">    def camelize_hash(obj)</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="114">
+          <li class="covered" data-hits="63" data-linenumber="114">
+            
+              <span class="hits">63</span>
             
 
             
 
-            <code class="ruby">    #   if Respondo.config.include_request_id &amp;&amp; @request&amp;.respond_to?(:request_id)</code>
+            <code class="ruby">      case obj</code>
           </li>
         </div>
       
@@ -11178,27 +11194,31 @@
 
             
 
-            <code class="ruby">    #     meta[:request_id] = @request.request_id</code>
+            <code class="ruby">      when Hash</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="116">
+          <li class="covered" data-hits="21" data-linenumber="116">
+            
+              <span class="hits">21</span>
             
 
             
 
-            <code class="ruby">    #   end</code>
+            <code class="ruby">        obj.each_with_object({}) do |(k, v), memo|</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="117">
+          <li class="covered" data-hits="55" data-linenumber="117">
+            
+              <span class="hits">55</span>
             
 
             
 
-            <code class="ruby"></code>
+            <code class="ruby">          memo[camelize_key(k)] = camelize_hash(v)</code>
           </li>
         </div>
       
@@ -11208,7 +11228,7 @@
 
             
 
-            <code class="ruby">    #   # Merge any caller-supplied meta last (allows overriding)</code>
+            <code class="ruby">        end</code>
           </li>
         </div>
       
@@ -11218,17 +11238,19 @@
 
             
 
-            <code class="ruby">    #   meta.merge(@extra_meta)</code>
+            <code class="ruby">      when Array</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="120">
+          <li class="covered" data-hits="3" data-linenumber="120">
+            
+              <span class="hits">3</span>
             
 
             
 
-            <code class="ruby">    # end</code>
+            <code class="ruby">        obj.map { |item| camelize_hash(item) }</code>
           </li>
         </div>
       
@@ -11238,41 +11260,39 @@
 
             
 
-            <code class="ruby"></code>
+            <code class="ruby">      else</code>
           </li>
         </div>
       
         <div>
-          <li class="covered" data-hits="1" data-linenumber="122">
+          <li class="covered" data-hits="41" data-linenumber="122">
             
-              <span class="hits">1</span>
-            
-
+              <span class="hits">41</span>
             
 
-            <code class="ruby">    def current_timestamp</code>
+            
+
+            <code class="ruby">        obj</code>
           </li>
         </div>
       
         <div>
-          <li class="covered" data-hits="230" data-linenumber="123">
-            
-              <span class="hits">230</span>
+          <li class="never" data-hits="" data-linenumber="123">
             
 
             
 
-            <code class="ruby">      if defined?(Time.current)</code>
+            <code class="ruby">      end</code>
           </li>
         </div>
       
         <div>
-          <li class="missed" data-hits="0" data-linenumber="124">
+          <li class="never" data-hits="" data-linenumber="124">
             
 
             
 
-            <code class="ruby">        Time.current.iso8601</code>
+            <code class="ruby">    end</code>
           </li>
         </div>
       
@@ -11282,29 +11302,31 @@
 
             
 
-            <code class="ruby">      else</code>
+            <code class="ruby"></code>
           </li>
         </div>
       
         <div>
-          <li class="covered" data-hits="230" data-linenumber="126">
+          <li class="covered" data-hits="1" data-linenumber="126">
             
-              <span class="hits">230</span>
-            
-
+              <span class="hits">1</span>
             
 
-            <code class="ruby">        Time.now.utc.iso8601</code>
+            
+
+            <code class="ruby">    def camelize_key(key)</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="127">
+          <li class="covered" data-hits="73" data-linenumber="127">
+            
+              <span class="hits">73</span>
             
 
             
 
-            <code class="ruby">      end</code>
+            <code class="ruby">      key.to_s.gsub(/_([a-z])/) { $1.upcase }.to_sym</code>
           </li>
         </div>
       
@@ -11324,254 +11346,12 @@
 
             
 
-            <code class="ruby"></code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="1" data-linenumber="130">
-            
-              <span class="hits">1</span>
-            
-
-            
-
-            <code class="ruby">    def apply_camelize(hash)</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="230" data-linenumber="131">
-            
-              <span class="hits">230</span>
-            
-
-            
-
-            <code class="ruby">      return hash unless Respondo.config.camelize_keys</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="6" data-linenumber="132">
-            
-              <span class="hits">6</span>
-            
-
-            
-
-            <code class="ruby">      camelize_hash(hash)</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="133">
-            
-
-            
-
-            <code class="ruby">    end</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="134">
-            
-
-            
-
-            <code class="ruby"></code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="1" data-linenumber="135">
-            
-              <span class="hits">1</span>
-            
-
-            
-
-            <code class="ruby">    def camelize_hash(obj)</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="63" data-linenumber="136">
-            
-              <span class="hits">63</span>
-            
-
-            
-
-            <code class="ruby">      case obj</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="137">
-            
-
-            
-
-            <code class="ruby">      when Hash</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="21" data-linenumber="138">
-            
-              <span class="hits">21</span>
-            
-
-            
-
-            <code class="ruby">        obj.each_with_object({}) do |(k, v), memo|</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="55" data-linenumber="139">
-            
-              <span class="hits">55</span>
-            
-
-            
-
-            <code class="ruby">          memo[camelize_key(k)] = camelize_hash(v)</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="140">
-            
-
-            
-
-            <code class="ruby">        end</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="141">
-            
-
-            
-
-            <code class="ruby">      when Array</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="3" data-linenumber="142">
-            
-              <span class="hits">3</span>
-            
-
-            
-
-            <code class="ruby">        obj.map { |item| camelize_hash(item) }</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="143">
-            
-
-            
-
-            <code class="ruby">      else</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="41" data-linenumber="144">
-            
-              <span class="hits">41</span>
-            
-
-            
-
-            <code class="ruby">        obj</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="145">
-            
-
-            
-
-            <code class="ruby">      end</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="146">
-            
-
-            
-
-            <code class="ruby">    end</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="147">
-            
-
-            
-
-            <code class="ruby"></code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="1" data-linenumber="148">
-            
-              <span class="hits">1</span>
-            
-
-            
-
-            <code class="ruby">    def camelize_key(key)</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="covered" data-hits="73" data-linenumber="149">
-            
-              <span class="hits">73</span>
-            
-
-            
-
-            <code class="ruby">      key.to_s.gsub(/_([a-z])/) { $1.upcase }.to_sym</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="150">
-            
-
-            
-
-            <code class="ruby">    end</code>
-          </li>
-        </div>
-      
-        <div>
-          <li class="never" data-hits="" data-linenumber="151">
-            
-
-            
-
             <code class="ruby">  end</code>
           </li>
         </div>
       
         <div>
-          <li class="never" data-hits="" data-linenumber="152">
+          <li class="never" data-hits="" data-linenumber="130">
             
 
             
