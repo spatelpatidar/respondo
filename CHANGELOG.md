@@ -1,5 +1,63 @@
 # Changelog
 
+## [2.1.1] — Bug Fix
+
+### Fixed
+
+#### `render_no_content` — status mismatch corrected
+Previously `render_no_content` was sending `status: :ok` (200) while setting
+`code: 204` in the meta block. This meant the HTTP response status was 200
+but the meta claimed 204 — inconsistent and misleading to clients.
+
+**Before (buggy):**
+```ruby
+def render_no_content(message: "Deleted successfully", meta: {}, pagination: nil)
+  render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :ok)
+  #                                                                                          ^^^^^^^^^^
+  #                                                                                          wrong — sends 200
+end
+```
+
+**After (fixed):**
+```ruby
+def render_no_content(message: "Deleted successfully", meta: {}, pagination: nil)
+  render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :no_content)
+  #                                                                                          ^^^^^^^^^^^^^^^^^^
+  #                                                                                          correct — sends 204
+end
+```
+
+**Why body is kept:** HTTP spec discourages a body on 204 but does not
+strictly forbid it. Respondo keeps the JSON body so FE clients can display
+the `message` field on delete confirmations. Rails and all major HTTP clients
+(Axios, Fetch, OkHttp) handle this correctly.
+
+**Migration:** No changes needed — method signature is identical. If you were
+relying on the incorrect 200 status in tests, update your assertions to
+expect 204.
+
+### Changed
+
+#### `respondo.gemspec` — corrected `bug_tracker_uri`
+A stray `auditron/` path segment was present in the `bug_tracker_uri` metadata
+field, producing a broken link on RubyGems.
+
+**Before:**
+```ruby
+"bug_tracker_uri" => "#{spec.homepage}/auditron/issues"
+```
+
+**After:**
+```ruby
+"bug_tracker_uri" => "#{spec.homepage}/issues"
+```
+
+#### `response_builder.rb` — removed stale commented-out code
+A dead `build_meta` implementation was left commented out from a previous
+refactor. Removed to keep the file clean and readable.
+
+---
+
 ## [2.1.0] — Interactive Install Generator
 
 ### Added

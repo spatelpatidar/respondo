@@ -97,28 +97,6 @@ module Respondo
       meta
     end
 
-    # def build_meta
-    #   meta = { timestamp: current_timestamp }
-
-    #   # Only extract pagination when caller has not explicitly disabled it
-    #   if @pagination
-    #     pagination = if @pagy
-    #       Pagination.extract(@pagy)
-    #     else
-    #       Pagination.extract(@raw_data)
-    #     end
-    #     meta[:pagination] = pagination if pagination
-    #   end
-
-    #   # Request ID (Rails only, opt-in via config)
-    #   if Respondo.config.include_request_id && @request&.respond_to?(:request_id)
-    #     meta[:request_id] = @request.request_id
-    #   end
-
-    #   # Merge any caller-supplied meta last (allows overriding)
-    #   meta.merge(@extra_meta)
-    # end
-
     def current_timestamp
       if defined?(Time.current)
         Time.current.iso8601

@@ -146,7 +146,7 @@ module Respondo
     # 204 No Content — deletions, actions with no response body
     # Note: we still return our standard JSON structure for consistency
     def render_no_content(message: "Deleted successfully", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :ok)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 204, status: :no_content)
     end
 
     # 205 Reset Content — tell the client to reset the document view
