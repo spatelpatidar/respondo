@@ -389,4 +389,26 @@ RSpec.describe Respondo::Generators::InstallGenerator do
       expect(content).not_to include("MyApp")
     end
   end
+
+  describe "build_content — empty default_meta branch" do
+    let(:dest) { Dir.mktmpdir("respondo_empty_meta_") }
+    after      { FileUtils.rm_rf(dest) }
+
+    it "writes config.default_meta = {} when api_version is blank and no extra meta" do
+      gen = described_class.new([], {}, destination_root: dest)
+      gen.instance_variable_set(:@cfg, {
+        project_name:            "TestApp",
+        api_version:             "",
+        default_success_message: "Success",
+        default_error_message:   "An error occurred",
+        include_request_id:      false,
+        camelize_keys:           false,
+        default_meta:            {},
+        custom_serializer:       false
+      })
+
+      content = gen.send(:build_content)
+      expect(content).to include("config.default_meta = {}")
+    end
+  end
 end

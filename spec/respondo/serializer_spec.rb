@@ -143,4 +143,31 @@ RSpec.describe Respondo::Serializer do
       expect(Respondo::Serializer.call(errors)).to eq({})
     end
   end
+
+  describe "serialize_record branches" do
+    before { stub_const("ActiveRecord::Base", Class.new) }
+
+    it "uses #to_h when record does not respond to #as_json" do
+      record = double("Record")
+      allow(record).to receive(:is_a?).and_return(false)
+      allow(record).to receive(:is_a?).with(ActiveRecord::Base).and_return(true)
+      allow(record).to receive(:respond_to?).with(:as_json).and_return(false)
+      allow(record).to receive(:respond_to?).with(:to_h).and_return(true)
+      allow(record).to receive(:to_h).and_return({ id: 7 })
+
+      expect(Respondo::Serializer.call(record)).to eq({ id: 7 })
+    end
+
+    it "returns record as-is when it responds to neither #as_json nor #to_h" do
+      record = double("BareRecord")
+      allow(record).to receive(:is_a?).and_return(false)
+      allow(record).to receive(:is_a?).with(ActiveRecord::Base).and_return(true)
+      allow(record).to receive(:respond_to?).with(:as_json).and_return(false)
+      allow(record).to receive(:respond_to?).with(:to_h).and_return(false)
+
+      expect(Respondo::Serializer.call(record)).to eq(record)
+    end
+  end
+
+
 end

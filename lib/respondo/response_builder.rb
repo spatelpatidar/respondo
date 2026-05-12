@@ -98,7 +98,7 @@ module Respondo
     end
 
     def current_timestamp
-      if defined?(Time.current)
+      if Time.respond_to?(:current)
         Time.current.iso8601
       else
         Time.now.utc.iso8601

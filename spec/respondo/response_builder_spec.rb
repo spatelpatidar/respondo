@@ -364,4 +364,22 @@ RSpec.describe Respondo::ResponseBuilder do
       expect(result[:data]).not_to have_key(:firstName)
     end
   end
+
+  describe "current_timestamp branches" do
+    it "uses Time.current.iso8601 when Time.current is defined" do
+      fake_time = double("Time", iso8601: "2024-06-01T00:00:00Z")
+      allow(Time).to receive(:respond_to?).with(:current).and_return(true)
+      allow(Time).to receive(:current).and_return(fake_time)
+
+      result = build(success: true)
+      expect(result[:meta][:timestamp]).to eq("2024-06-01T00:00:00Z")
+    end
+
+    it "falls back to Time.now.utc.iso8601 when Time.current is not available" do
+      allow(Time).to receive(:respond_to?).with(:current).and_return(false)
+
+      result = build(success: true)
+      expect(result[:meta][:timestamp]).to match(/\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+    end
+  end
 end

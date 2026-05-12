@@ -43,132 +43,6 @@ RSpec.describe Respondo::ControllerHelpers do
   end
 
   # =========================================================================
-  # render_success (core)
-  # =========================================================================
-
-  describe "#render_success" do
-    it "renders success: true with status :ok by default" do
-      controller.render_success
-      expect(response_body[:success]).to eq(true)
-      expect(response_status).to         eq(:ok)
-    end
-
-    it "includes data in the response" do
-      controller.render_success(data: { id: 1 })
-      expect(response_body[:data]).to eq({ id: 1 })
-    end
-
-    it "includes message" do
-      controller.render_success(message: "Done")
-      expect(response_body[:message]).to eq("Done")
-    end
-
-    it "uses default success message when none given" do
-      controller.render_success
-      expect(response_body[:message]).to eq("Success")
-    end
-
-    it "accepts custom status" do
-      controller.render_success(status: :created)
-      expect(response_status).to eq(:created)
-    end
-
-    it "includes pagination in meta when a pagination hash is passed" do
-      controller.render_success(pagination: pagination_hash)
-      expect(response_body[:meta][:pagination]).to eq(pagination_hash)
-    end
-
-    it "omits pagination from meta when no pagination hash is passed" do
-      controller.render_success(data: { id: 1 })
-      expect(response_body[:meta]).not_to have_key(:pagination)
-    end
-
-    it "omits pagination from meta when pagination: nil explicitly" do
-      controller.render_success(pagination: nil)
-      expect(response_body[:meta]).not_to have_key(:pagination)
-    end
-
-    it "accepts extra meta" do
-      controller.render_success(meta: { version: "v1" })
-      expect(response_body[:meta][:version]).to eq("v1")
-    end
-
-    it "always includes timestamp in meta" do
-      controller.render_success
-      expect(response_body[:meta]).to have_key(:timestamp)
-    end
-
-    it "includes code and status in meta when code is given" do
-      controller.render_success(code: 200, status: :ok)
-      expect(response_body[:meta][:code]).to   eq(200)
-      expect(response_body[:meta][:status]).to eq(:ok)
-    end
-  end
-
-  # =========================================================================
-  # render_error (core)
-  # =========================================================================
-
-  describe "#render_error" do
-    it "renders success: false with status :unprocessable_entity by default" do
-      controller.render_error
-      expect(response_body[:success]).to eq(false)
-      expect(response_status).to         eq(:unprocessable_entity)
-    end
-
-    it "includes message" do
-      controller.render_error(message: "Something broke")
-      expect(response_body[:message]).to eq("Something broke")
-    end
-
-    it "includes field errors from a Hash" do
-      controller.render_error(errors: { email: ["is invalid"] })
-      expect(response_body[:errors]).to eq({ email: ["is invalid"] })
-    end
-
-    it "includes error code in meta" do
-      controller.render_error(code: "AUTH_EXPIRED")
-      expect(response_body[:meta][:code]).to eq("AUTH_EXPIRED")
-    end
-
-    it "normalizes Array errors to base key" do
-      controller.render_error(errors: ["too short", "is blank"])
-      expect(response_body[:errors][:base]).to eq(["too short", "is blank"])
-    end
-
-    it "normalizes String errors to base key" do
-      controller.render_error(errors: "Invalid input")
-      expect(response_body[:errors][:base]).to eq(["Invalid input"])
-    end
-
-    it "accepts custom status" do
-      controller.render_error(status: :not_found)
-      expect(response_status).to eq(:not_found)
-    end
-
-    it "does not include errors key when errors is nil" do
-      controller.render_error
-      expect(response_body).not_to have_key(:errors)
-    end
-
-    it "never includes pagination in meta" do
-      controller.render_error(message: "Oops")
-      expect(response_body[:meta]).not_to have_key(:pagination)
-    end
-
-    it "extracts errors from an ActiveModel::Errors object" do
-      stub_const("ActiveModel::Errors", Class.new)
-      mock_errors = double("ActiveModel::Errors")
-      allow(mock_errors).to receive(:is_a?).with(ActiveModel::Errors).and_return(true)
-      allow(mock_errors).to receive(:to_hash).and_return({ name: ["can't be blank"] })
-
-      controller.render_error(errors: mock_errors)
-
-      expect(response_body[:errors]).to eq({ name: ["can't be blank"] })
-    end
-  end
-
-  # =========================================================================
   # 1xx — Informational helpers
   # =========================================================================
 
@@ -997,4 +871,30 @@ RSpec.describe Respondo::ControllerHelpers do
     end
   end
 
+  describe "extract_errors branches" do
+    it "extracts ActiveModel::Errors via to_hash" do
+      stub_const("ActiveModel::Errors", Class.new)
+      mock_errors = double("ActiveModel::Errors")
+      allow(mock_errors).to receive(:is_a?).with(ActiveModel::Errors).and_return(true)
+      allow(mock_errors).to receive(:to_hash).and_return({ name: ["can't be blank"] })
+
+      result = controller.send(:extract_errors, mock_errors)
+      expect(result).to eq({ name: ["can't be blank"] })
+    end
+
+    it "returns Array errors wrapped under :base" do
+      result = controller.send(:extract_errors, ["too short", "is blank"])
+      expect(result).to eq({ base: ["too short", "is blank"] })
+    end
+
+    it "returns String errors wrapped in array under :base" do
+      result = controller.send(:extract_errors, "Invalid input")
+      expect(result).to eq({ base: ["Invalid input"] })
+    end
+
+    it "returns nil for unrecognized error types" do
+      result = controller.send(:extract_errors, 42)
+      expect(result).to be_nil
+    end
+  end
 end

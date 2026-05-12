@@ -1,5 +1,115 @@
 # Changelog
 
+## [2.1.2] — Code Quality & Test Coverage
+
+### Fixed
+
+#### `controller_helpers.rb` — `render_success` and `render_error` made private
+Previously `render_success` and `render_error` were public methods, meaning any
+controller could call them directly — bypassing the semantic named helpers
+(`render_ok`, `render_created`, `render_forbidden`, etc.) and undermining the
+gem's design intent.
+
+**Before (public — bypassable):**
+```ruby
+# Any controller could do this, skipping semantic intent entirely
+render_success(data: @user, status: :created)
+render_error(message: "bad", status: :not_found)
+```
+
+**After (private — enforced through named helpers only):**
+```ruby
+# Correct usage — callers must use the named helpers
+render_created(data: @user)
+render_not_found(message: "User not found")
+```
+
+**Why:** The named helpers encode the correct HTTP status code, default
+message, and meta code for each scenario. Allowing direct calls to
+`render_success` / `render_error` lets callers set arbitrary status/code
+combinations that break the consistency guarantee.
+
+**Migration:** Replace any direct `render_success` / `render_error` calls in
+your controllers with the appropriate named helper. All named helpers remain
+public and their signatures are unchanged.
+
+---
+
+#### `response_builder.rb` — replaced `defined?(Time.current)` with `Time.respond_to?(:current)`
+The original guard used Ruby's `defined?` keyword to check for Rails'
+`Time.current`. However, `defined?(Time.current)` always returns `"method"`
+as long as the `Time` constant exists — making the `else` branch permanently
+unreachable even in non-Rails environments.
+
+**Before (broken guard — else branch unreachable):**
+```ruby
+def current_timestamp
+  if defined?(Time.current)   # always truthy — else never runs
+    Time.current.iso8601
+  else
+    Time.now.utc.iso8601      # dead code
+  end
+end
+```
+
+**After (correct guard — both branches reachable):**
+```ruby
+def current_timestamp
+  if Time.respond_to?(:current)   # false outside Rails
+    Time.current.iso8601
+  else
+    Time.now.utc.iso8601           # correctly used in plain Ruby
+  end
+end
+```
+
+**Why:** `respond_to?` correctly returns `false` in plain Ruby environments
+where ActiveSupport is not loaded, allowing the `Time.now.utc` fallback to
+actually execute. Behaviour in Rails is identical since `Time.respond_to?(:current)`
+returns `true` when ActiveSupport is present.
+
+---
+
+#### `install_generator.rb` — blank `api_version` no longer writes empty key to initializer
+Previously, if a user entered a blank api_version at the prompt, the generator
+would write `api_version: ""` into the initializer's `default_meta` block —
+a meaningless empty string that would be sent in every API response.
+
+**Before (wrote empty key):**
+```ruby
+meta = { "api_version" => @cfg[:api_version] }.merge(@cfg[:default_meta])
+# If api_version is "" → writes: api_version: ""
+```
+
+**After (omits blank api_version):**
+```ruby
+meta = @cfg[:default_meta].dup
+meta["api_version"] = @cfg[:api_version] unless @cfg[:api_version].to_s.empty?
+# If api_version is "" → key is cleanly omitted
+# If no extra meta either → writes: config.default_meta = {}
+```
+
+**Why:** An empty `api_version` key adds noise to every response's meta block
+with no value. The generator now omits it cleanly, and the previously
+unreachable `config.default_meta = {}` branch is now correctly written when
+both `api_version` is blank and no extra meta fields were added.
+
+---
+
+### Changed
+
+#### Test coverage improved from 97.92% → 100%
+All previously uncovered branches are now exercised:
+
+| File | Branch previously missed | Fix |
+|------|--------------------------|-----|
+| `controller_helpers.rb` | `extract_errors` — `ActiveModel::Errors`, `Array`, `String`, and unknown-type paths | Added `send(:extract_errors, ...)` specs |
+| `response_builder.rb` | `else` branch of `current_timestamp` (non-Rails fallback) | Fixed guard + added branch specs |
+| `install_generator.rb` | `if meta.empty?` branch in `build_content` | Fixed generator logic + added spec |
+| `serializer.rb` | `serialize_record` — `elsif respond_to?(:to_h)` and `else` (bare record) | Added `serialize_record` branch specs |
+
+---
+
 ## [2.1.1] — Bug Fix
 
 ### Fixed

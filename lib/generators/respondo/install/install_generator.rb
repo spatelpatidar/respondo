@@ -187,7 +187,9 @@ module Respondo
       end
 
       def build_content
-        meta = { "api_version" => @cfg[:api_version] }.merge(@cfg[:default_meta])
+        # meta = { "api_version" => @cfg[:api_version] }.merge(@cfg[:default_meta])
+        meta = @cfg[:default_meta].dup
+        meta["api_version"] = @cfg[:api_version] unless @cfg[:api_version].to_s.empty?
         b    = Lines.new
 
         b << "# frozen_string_literal: true"

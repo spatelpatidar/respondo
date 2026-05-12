@@ -40,59 +40,6 @@ module Respondo
   module ControllerHelpers
 
     # =========================================================================
-    # Core DSL — all helpers delegate to these two
-    # =========================================================================
-
-    # Render a successful JSON response.
-    #
-    # @param data       [Object]          payload — AR model, collection, Hash, Array, nil
-    # @param message    [String]          human-readable description
-    # @param meta       [Hash]            extra meta fields merged into the meta block
-    # @param pagination [Hash, nil]       pagination hash built by the caller, e.g.
-    #                                     { current_page: 1, per_page: 25, total_pages: 4,
-    #                                       total_count: 100, next_page: 2, prev_page: nil }
-    #                                     Pass nil (default) to omit pagination from meta.
-    # @param status     [Symbol, Integer] HTTP status (default: :ok / 200)
-    def render_success(data: nil, message: nil, meta: {}, code: nil, pagination: nil, status: :ok)
-      merged_meta = code ? meta.merge(code: code, status: status) : meta
-
-      payload = ResponseBuilder.new(
-        success:    true,
-        data:       data,
-        message:    message,
-        meta:       merged_meta,
-        pagination: pagination,
-        request:    try(:request)
-      ).build
-
-      render json: payload, status: status
-    end
-
-    # Render an error JSON response.
-    #
-    # @param message [String]                      human-readable error description
-    # @param errors  [Hash, ActiveModel::Errors]   field-level validation errors
-    # @param code    [String, nil]                 machine-readable error code e.g. "AUTH_EXPIRED"
-    # @param meta    [Hash]                        extra meta fields
-    # @param status  [Symbol, Integer]             HTTP status (default: :unprocessable_entity / 422)
-
-    def render_error(message: nil, errors: nil, code: nil, meta: {}, status: :unprocessable_entity)
-      extracted_errors = extract_errors(errors)
-      merged_meta      = code ? meta.merge(code: code, status: status) : meta
-
-      payload = ResponseBuilder.new(
-        success:    false,
-        data:       nil,
-        message:    message,
-        meta:       merged_meta,
-        errors:     extracted_errors,
-        request:    try(:request)
-      ).build
-
-      render json: payload, status: status
-    end
-
-    # =========================================================================
     # 1xx Informational helpers
     # NOTE: 1xx responses are protocol-level and don't carry a body in HTTP/1.1.
     # These helpers return a JSON body for API consistency / logging purposes,
@@ -423,6 +370,59 @@ module Respondo
     end
 
     private
+
+    # =========================================================================
+    # Core DSL — all helpers delegate to these two
+    # =========================================================================
+
+    # Render a successful JSON response.
+    #
+    # @param data       [Object]          payload — AR model, collection, Hash, Array, nil
+    # @param message    [String]          human-readable description
+    # @param meta       [Hash]            extra meta fields merged into the meta block
+    # @param pagination [Hash, nil]       pagination hash built by the caller, e.g.
+    #                                     { current_page: 1, per_page: 25, total_pages: 4,
+    #                                       total_count: 100, next_page: 2, prev_page: nil }
+    #                                     Pass nil (default) to omit pagination from meta.
+    # @param status     [Symbol, Integer] HTTP status (default: :ok / 200)
+    def render_success(data: nil, message: nil, meta: {}, code: nil, pagination: nil, status: :ok)
+      merged_meta = code ? meta.merge(code: code, status: status) : meta
+
+      payload = ResponseBuilder.new(
+        success:    true,
+        data:       data,
+        message:    message,
+        meta:       merged_meta,
+        pagination: pagination,
+        request:    try(:request)
+      ).build
+
+      render json: payload, status: status
+    end
+
+    # Render an error JSON response.
+    #
+    # @param message [String]                      human-readable error description
+    # @param errors  [Hash, ActiveModel::Errors]   field-level validation errors
+    # @param code    [String, nil]                 machine-readable error code e.g. "AUTH_EXPIRED"
+    # @param meta    [Hash]                        extra meta fields
+    # @param status  [Symbol, Integer]             HTTP status (default: :unprocessable_entity / 422)
+
+    def render_error(message: nil, errors: nil, code: nil, meta: {}, status: :unprocessable_entity)
+      extracted_errors = extract_errors(errors)
+      merged_meta      = code ? meta.merge(code: code, status: status) : meta
+
+      payload = ResponseBuilder.new(
+        success:    false,
+        data:       nil,
+        message:    message,
+        meta:       merged_meta,
+        errors:     extracted_errors,
+        request:    try(:request)
+      ).build
+
+      render json: payload, status: status
+    end
 
     # Normalize errors into a plain Hash regardless of source type.
     def extract_errors(errors)
