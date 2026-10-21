@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel an older run of the same branch/PR when a new commit is pushed
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: CI only needs to read the code
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Specs (Ruby ${{ matrix.ruby }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Dev dependencies (Rails 8.1) need Ruby 3.2+
+        ruby: ["3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run RSpec
+        run: bundle exec rspec --format progress
+
+  build:
+    name: Build gem
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Build gem (checks the gemspec and file list)
+        run: |
+          gem build respondo.gemspec
+          ruby -rrubygems/package -e 'puts Gem::Package.new(Dir["*.gem"].first).contents.sort'
+
+  # One stable check name to mark as "required" in the ruleset
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any job failed or was cancelled
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ]; then
+            echo "One or more jobs did not succeed"; exit 1
+          fi
