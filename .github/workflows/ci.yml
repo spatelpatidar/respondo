@@ -16,34 +16,67 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Specs (Ruby ${{ matrix.ruby }})
+  # ── Linux: every Ruby version, one after another ──────────────────────────
+  linux-ruby-3-2:
+    name: Linux · Ruby 3.2
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Dev dependencies (Rails 8.1) need Ruby 3.2+
-        ruby: ["3.2", "3.3", "3.4"]
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
         with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
+          ruby-version: "3.2"
 
-      - name: Run RSpec
-        run: bundle exec rspec --format progress
+  linux-ruby-3-3:
+    name: Linux · Ruby 3.3
+    needs: linux-ruby-3-2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
+        with:
+          ruby-version: "3.3"
 
+  linux-ruby-3-4:
+    name: Linux · Ruby 3.4
+    needs: linux-ruby-3-3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
+        with:
+          ruby-version: "3.4"
+
+  # ── Windows and macOS: start after Linux passes, run side by side ─────────
+  windows-ruby-3-4:
+    name: Windows · Ruby 3.4
+    needs: linux-ruby-3-4
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
+        with:
+          ruby-version: "3.4"
+
+  macos-ruby-3-4:
+    name: macOS · Ruby 3.4
+    needs: windows-ruby-3-4
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
+        with:
+          ruby-version: "3.4"
+
+  # ── Build, analysis, final gate ───────────────────────────────────────────
   build:
     name: Build gem
+    needs: [windows-ruby-3-4, macos-ruby-3-4]   # starts only after every spec job passes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
         with:
           ruby-version: "3.4"
           bundler-cache: true
@@ -53,15 +86,50 @@ jobs:
           gem build respondo.gemspec
           ruby -rrubygems/package -e 'puts Gem::Package.new(Dir["*.gem"].first).contents.sort'
 
+  sonar:
+    name: SonarQube analysis
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Run specs to produce coverage
+        run: bundle exec rspec --format progress
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: -Dsonar.qualitygate.wait=true
+
   # One stable check name to mark as "required" in the ruleset
   ci-passed:
     name: CI passed
     if: always()
-    needs: [test, build]
+    needs:
+      - linux-ruby-3-2
+      - linux-ruby-3-3
+      - linux-ruby-3-4
+      - windows-ruby-3-4
+      - macos-ruby-3-4
+      - build
+      - sonar
     runs-on: ubuntu-latest
     steps:
-      - name: Fail if any job failed or was cancelled
+      - name: Fail if any job failed, was skipped or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
         run: |
-          if [ "${{ needs.test.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ]; then
-            echo "One or more jobs did not succeed"; exit 1
-          fi
+          echo "One or more jobs did not succeed"
+          exit 1
+
+      - name: All jobs passed
+        run: echo "All jobs passed"

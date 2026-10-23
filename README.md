@@ -2,7 +2,7 @@
 
 # Respondo 🎯
 
-**Consistent JSON API responses for Rails — in one line.**
+Consistent JSON API responses for Rails, in one line.
 
 [![Gem Version](https://badge.fury.io/rb/respondo.svg)](https://rubygems.org/gems/respondo)
 [![Downloads](https://img.shields.io/gem/dt/respondo.svg)](https://rubygems.org/gems/respondo)
@@ -28,9 +28,9 @@ You're building an API consumed by a React frontend and a Flutter app. Three dev
 { "users": [...] }
 ```
 
-Your frontend devs are writing `if (res.data || res.result || res.users)`. Your Flutter devs are filing bugs. Your code reviews are arguments.
+Your frontend devs end up writing `if (res.data || res.result || res.users)` just to survive. The Front End team files bugs about the mismatch. Code review turns into an argument about whose format is "right."
 
-**Respondo fixes this permanently.** One response shape. Every controller. Every developer. Every time.
+Respondo fixes this: one response shape, enforced automatically across every controller. Every developer. Every time.
 
 ```json
 {
@@ -58,7 +58,7 @@ bundle install
 rails generate respondo:install
 ```
 
-That's it. No `include` in `ApplicationController`. No boilerplate. Respondo auto-injects via Railtie.
+That's it. No `include` in `ApplicationController`, no boilerplate — Respondo hooks in automatically via a Railtie.
 
 ---
 
@@ -87,11 +87,11 @@ class UsersController < ApplicationController
 end
 ```
 
-Your frontend now gets a **guaranteed** structure — forever.
+Now your frontend can count on getting the same shape back every time.
 
 ---
 
-## Why teams switch to Respondo
+## What changes
 
 | Without Respondo | With Respondo |
 |---|---|
@@ -100,13 +100,13 @@ Your frontend now gets a **guaranteed** structure — forever.
 | Pagination shape differs per endpoint | Pagination always in `meta.pagination` |
 | Validation errors in different keys | Always in `errors`, always a hash |
 | `render json:` boilerplate in every action | One expressive method call |
-| camelCase conversion scattered across code | `config.camelize_keys = true` — done |
+| camelCase conversion scattered across code | `config.camelize_keys = true`, done |
 
 ---
 
 ## What every response looks like
 
-Every response — success or error — has the same four keys:
+Every response, success or error, has the same four keys:
 
 | Key | Type | Description |
 |---|---|---|
@@ -189,12 +189,12 @@ class PostsController < ApplicationController
 end
 ```
 
-## Auto-Serialization
+## Auto-serialization
 
 Respondo automatically handles:
 
 | Input type                       | Output                              |
-|----------------------------------|-------------------------------------|
+|----------------------------------|--------------------------------------|
 | `ActiveRecord::Base` instance    | `record.as_json`                    |
 | `ActiveRecord::Relation`         | Array of `as_json` records          |
 | `ActiveModel::Errors`            | `{ field: ["message", ...] }`       |
@@ -252,7 +252,7 @@ config.serializer = ->(obj) { MySerializer.new(obj).as_json }
 
 ## Global error handling (recommended pattern)
 
-Add this to `ApplicationController` to handle exceptions app-wide without try/rescue in every action:
+Add this to `ApplicationController` to handle exceptions app-wide without a try/rescue in every action:
 
 ```ruby
 class ApplicationController < ActionController::API
@@ -275,7 +275,7 @@ end
 
 ## Complete HTTP helper reference
 
-Respondo covers every HTTP status code. Here are the helpers you'll use every day:
+There's a helper for basically every HTTP status code. Here are the ones you'll actually reach for:
 
 ### 2xx — Success
 
@@ -286,7 +286,7 @@ Respondo covers every HTTP status code. Here are the helpers you'll use every da
 | `render_accepted` | 202 | Async jobs — request queued |
 | `render_no_content` | 200* | After DELETE — no body |
 
-> *Rails renders 200 with a JSON body for `render_no_content` to preserve consistent structure.
+> *Rails renders 200 with a JSON body for `render_no_content` to keep the response shape consistent.
 
 ```ruby
 render_ok(data: @user, message: "Profile fetched")
@@ -422,5 +422,8 @@ Released under the [MIT License](LICENSE).
 ---
 
 <div align="center">
-  <sub>If Respondo saved you an hour, give it a ⭐ — it helps other developers find it.</sub>
+  <sub>If Respondo saved your an hour, give it a Star⭐.</sub>
+</div>
+<div align="center">
+  <sub>it helps other developers find it.</sub>
 </div>

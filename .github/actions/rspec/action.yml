@@ -1,0 +1,20 @@
+name: Set up Ruby and run RSpec
+description: Installs Ruby and gems (with caching) and runs the spec suite.
+
+inputs:
+  ruby-version:
+    description: Ruby version to use
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Ruby ${{ inputs.ruby-version }}
+      uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
+      with:
+        ruby-version: ${{ inputs.ruby-version }}
+        bundler-cache: true
+
+    - name: Run RSpec
+      shell: bash
+      run: bundle exec rspec --format progress

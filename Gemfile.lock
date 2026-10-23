@@ -61,6 +61,8 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     minitest (5.27.0)
+    nokogiri (1.19.2-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.19.2-x64-mingw-ucrt)
       racc (~> 1.4)
     nokogiri (1.19.2-x86_64-linux-gnu)
@@ -134,6 +136,7 @@ GEM
     zeitwerk (2.7.5)
 
 PLATFORMS
+  arm64-darwin
   x64-mingw-ucrt
   x86_64-linux
 
@@ -168,6 +171,7 @@ CHECKSUMS
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   loofah (2.25.1) sha256=d436c73dbd0c1147b16c4a41db097942d217303e1f7728704b37e4df9f6d2e04
   minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
+  nokogiri (1.19.2-arm64-darwin) sha256=58d8ea2e31a967b843b70487a44c14c8ba1866daa1b9da9be9dbdf1b43dee205
   nokogiri (1.19.2-x64-mingw-ucrt) sha256=8ccf25eea3363a2c7b3f2e173a3400582c633cfead27f805df9a9c56d4852d1a
   nokogiri (1.19.2-x86_64-linux-gnu) sha256=fa8feca882b73e871a9845f3817a72e9734c8e974bdc4fbad6e4bc6e8076b94f
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
