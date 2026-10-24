@@ -4,6 +4,7 @@
 
 Consistent JSON API responses for Rails, in one line.
 
+[![CI Suite](https://github.com/spatelpatidar/respondo/actions/workflows/ci.yml/badge.svg)](https://github.com/spatelpatidar/respondo/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/respondo.svg)](https://rubygems.org/gems/respondo)
 [![Downloads](https://img.shields.io/gem/dt/respondo.svg)](https://rubygems.org/gems/respondo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
