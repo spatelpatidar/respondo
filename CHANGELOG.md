@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.3] — Docs & Dependency Updates
+
+### Changed
+- README updated (add a one-line summary of what you changed)
+- Development dependencies updated to patched versions, fixing CVEs in
+  `concurrent-ruby`, `erb` and `rails-html-sanitizer`. These are test-only
+  dependencies, so there is no change to the gem's runtime behavior.
+
 ## [2.1.2] — Code Quality & Test Coverage
 
 ### Fixed
