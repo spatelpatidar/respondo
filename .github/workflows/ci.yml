@@ -17,8 +17,17 @@ permissions:
 
 jobs:
   # ── Linux: every Ruby version, one after another ──────────────────────────
+  linux-ruby-2-7:
+    name: Linux · Ruby 2.7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/rspec
+        with:
+          ruby-version: "2.7"
   linux-ruby-3-2:
     name: Linux · Ruby 3.2
+    needs: linux-ruby-2-7
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

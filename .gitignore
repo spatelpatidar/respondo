@@ -1,0 +1,11 @@
+/.bundle/
+/.idea/
+/coverage/
+/pkg/
+*.gem
+/spec/respondo_test.txt
+/spec/examples.txt
+/WORKFLOW.md
+/Gems/
+/saved_resource.html
+/respondo_folder_structure.svg
