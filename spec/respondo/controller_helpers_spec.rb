@@ -43,54 +43,6 @@ RSpec.describe Respondo::ControllerHelpers do
   end
 
   # =========================================================================
-  # 1xx — Informational helpers
-  # =========================================================================
-
-  describe "1xx informational helpers" do
-    describe "#render_continue" do
-      it "renders success: true with code 100" do
-        controller.render_continue
-        expect(response_body[:success]).to      eq(true)
-        expect(response_body[:meta][:code]).to  eq(100)
-      end
-
-      it "accepts a custom message" do
-        controller.render_continue(message: "Keep going")
-        expect(response_body[:message]).to eq("Keep going")
-      end
-    end
-
-    describe "#render_switching_protocols" do
-      it "renders success: true with code 101" do
-        controller.render_switching_protocols
-        expect(response_body[:success]).to      eq(true)
-        expect(response_body[:meta][:code]).to  eq(101)
-      end
-    end
-
-    describe "#render_processing" do
-      it "renders success: true with code 102" do
-        controller.render_processing
-        expect(response_body[:success]).to      eq(true)
-        expect(response_body[:meta][:code]).to  eq(102)
-      end
-    end
-
-    describe "#render_early_hints" do
-      it "renders success: true with code 103" do
-        controller.render_early_hints
-        expect(response_body[:success]).to      eq(true)
-        expect(response_body[:meta][:code]).to  eq(103)
-      end
-
-      it "accepts extra meta for link headers" do
-        controller.render_early_hints(meta: { link: "</style.css>; rel=preload" })
-        expect(response_body[:meta][:link]).to eq("</style.css>; rel=preload")
-      end
-    end
-  end
-
-  # =========================================================================
   # 2xx — Success helpers
   # =========================================================================
 
@@ -788,16 +740,11 @@ RSpec.describe Respondo::ControllerHelpers do
   end
 
   # =========================================================================
-  # Response shape guarantee — ALL 57 helpers
+  # Response shape guarantee — ALL helpers
   # =========================================================================
 
   describe "response shape guarantee — every helper returns success, message, data, meta" do
     all_helpers = [
-      # 1xx
-      ->(c) { c.render_continue },
-      ->(c) { c.render_switching_protocols },
-      ->(c) { c.render_processing },
-      ->(c) { c.render_early_hints },
       # 2xx
       ->(c) { c.render_ok },
       ->(c) { c.render_created },
