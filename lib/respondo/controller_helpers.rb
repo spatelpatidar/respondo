@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "uri"
 
 module Respondo
   # Mixed into Rails controllers to provide render_success and render_error.
@@ -38,33 +39,6 @@ module Respondo
   #   render_insufficient_storage, render_loop_detected, render_not_extended,
   #   render_network_authentication_required
   module ControllerHelpers
-
-    # =========================================================================
-    # 1xx Informational helpers
-    # NOTE: 1xx responses are protocol-level and don't carry a body in HTTP/1.1.
-    # These helpers return a JSON body for API consistency / logging purposes,
-    # but most HTTP clients will not receive them as normal responses.
-    # =========================================================================
-
-    # 100 Continue
-    def render_continue(message: "Continue", meta: {})
-      render_success(data: nil, message: message, meta: meta, code: 100, status: :continue)
-    end
-
-    # 101 Switching Protocols
-    def render_switching_protocols(message: "Switching protocols", meta: {})
-      render_success(data: nil, message: message, meta: meta, code: 101, status: :switching_protocols)
-    end
-
-    # 102 Processing (WebDAV)
-    def render_processing(message: "Processing", meta: {})
-      render_success(data: nil, message: message, meta: meta, code: 102, status: :processing)
-    end
-
-    # 103 Early Hints
-    def render_early_hints(message: "Early hints", meta: {})
-      render_success(data: nil, message: message, meta: meta, code: 103, status: :early_hints)
-    end
 
     # =========================================================================
     # 2xx Success helpers
@@ -124,26 +98,36 @@ module Respondo
     # =========================================================================
     # 3xx Redirect helpers
     # NOTE: Pass the target URL via meta: render_moved_permanently(meta: { redirect_url: new_url })
+    # Pass the target with `location:` — it is sent as a real Location header
+    # (and mirrored into meta[:redirect_url]):
+    #   render_found(location: "/login")
+    # Only same-host or relative targets are accepted. A different host raises
+    # Respondo::UnsafeRedirectError unless `allow_other_host: true` is given.
+    # Never pass unvalidated user input together with allow_other_host: true.
     # =========================================================================
 
     # 300 Multiple Choices
-    def render_multiple_choices(data: nil, message: "Multiple choices available", meta: {}, pagination: nil)
-      render_success(data: data, message: message, meta: meta, pagination: pagination, code: 300, status: :multiple_choices)
+    def render_multiple_choices(data: nil, message: "Multiple choices available", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: data, message: message, meta: meta, pagination: pagination, code: 300, status: :multiple_choices,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # 301 Moved Permanently
-    def render_moved_permanently(message: "Resource has moved permanently", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 301, status: :moved_permanently)
+    def render_moved_permanently(message: "Resource has moved permanently", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 301, status: :moved_permanently,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # 302 Found (temporary redirect)
-    def render_found(message: "Resource temporarily located elsewhere", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 302, status: :found)
+    def render_found(message: "Resource temporarily located elsewhere", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 302, status: :found,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # 303 See Other — redirect to another URI with GET
-    def render_see_other(message: "See other resource", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 303, status: :see_other)
+    def render_see_other(message: "See other resource", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 303, status: :see_other,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # 304 Not Modified — client cache is still valid
@@ -152,13 +136,15 @@ module Respondo
     end
 
     # 307 Temporary Redirect — repeat request with same method to new URL
-    def render_temporary_redirect(message: "Temporary redirect", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 307, status: :temporary_redirect)
+    def render_temporary_redirect(message: "Temporary redirect", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 307, status: :temporary_redirect,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # 308 Permanent Redirect — like 301 but method must not change
-    def render_permanent_redirect(message: "Permanent redirect", meta: {}, pagination: nil)
-      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 308, status: :permanent_redirect)
+    def render_permanent_redirect(message: "Permanent redirect", meta: {}, pagination: nil, location: nil, allow_other_host: false)
+      render_success(data: nil, message: message, meta: meta, pagination: pagination, code: 308, status: :permanent_redirect,
+                     location: location, allow_other_host: allow_other_host)
     end
 
     # =========================================================================
@@ -232,7 +218,7 @@ module Respondo
 
     # 413 Payload Too Large — request body exceeds server limit
     def render_payload_too_large(message: "Payload too large", errors: nil, meta: {})
-      render_error(message: message, errors: errors, meta: meta, code: 413, status: :payload_too_large)
+      render_error(message: message, errors: errors, meta: meta, code: 413, status: respondo_status(:content_too_large, :payload_too_large, 413))
     end
 
     # 414 URI Too Long — request URI exceeds server limit
@@ -257,7 +243,7 @@ module Respondo
 
     # 418 I'm a Teapot — RFC 2324
     def render_im_a_teapot(message: "I'm a teapot", errors: nil, meta: {})
-      render_error(message: message, errors: errors, meta: meta, code: 418, status: :im_a_teapot)
+      render_error(message: message, errors: errors, meta: meta, code: 418, status: respondo_status(:im_a_teapot, 418))
     end
 
     # 421 Misdirected Request — request sent to wrong server
@@ -267,7 +253,7 @@ module Respondo
 
     # 422 Unprocessable Entity — validation errors (most common for APIs)
     def render_unprocessable(message: "Validation failed", errors: nil, meta: {})
-      render_error(message: message, errors: errors, meta: meta, code: 422, status: :unprocessable_content)
+      render_error(message: message, errors: errors, meta: meta, code: 422, status: respondo_unprocessable_status)
     end
 
     # 423 Locked — resource is locked
@@ -361,7 +347,7 @@ module Respondo
 
     # 510 Not Extended — further extensions needed
     def render_not_extended(message: "Not extended", errors: nil, meta: {})
-      render_error(message: message, errors: errors, meta: meta, code: 510, status: :not_extended)
+      render_error(message: message, errors: errors, meta: meta, code: 510, status: 510)
     end
 
     # 511 Network Authentication Required — must authenticate to access network
@@ -385,8 +371,16 @@ module Respondo
     #                                       total_count: 100, next_page: 2, prev_page: nil }
     #                                     Pass nil (default) to omit pagination from meta.
     # @param status     [Symbol, Integer] HTTP status (default: :ok / 200)
-    def render_success(data: nil, message: nil, meta: {}, code: nil, pagination: nil, status: :ok)
+    def render_success(data: nil, message: nil, meta: {}, code: nil, pagination: nil, status: :ok,
+                       location: nil, allow_other_host: false)
+      meta        = {} if meta.nil?
       merged_meta = code ? meta.merge(code: code, status: status) : meta
+
+      if location
+        safe_location = respondo_safe_location!(location, allow_other_host)
+        merged_meta   = merged_meta.merge(redirect_url: safe_location)
+        respondo_set_location_header(safe_location)
+      end
 
       payload = ResponseBuilder.new(
         success:    true,
@@ -394,7 +388,7 @@ module Respondo
         message:    message,
         meta:       merged_meta,
         pagination: pagination,
-        request:    try(:request)
+        request:    respondo_request
       ).build
 
       render json: payload, status: status
@@ -409,6 +403,7 @@ module Respondo
     # @param status  [Symbol, Integer]             HTTP status (default: :unprocessable_entity / 422)
 
     def render_error(message: nil, errors: nil, code: nil, meta: {}, status: :unprocessable_entity)
+      meta             = {} if meta.nil?
       extracted_errors = extract_errors(errors)
       merged_meta      = code ? meta.merge(code: code, status: status) : meta
 
@@ -418,10 +413,73 @@ module Respondo
         message:    message,
         meta:       merged_meta,
         errors:     extracted_errors,
-        request:    try(:request)
+        request:    respondo_request
       ).build
 
       render json: payload, status: status
+    end
+
+    # Rack 3.1+ renamed :unprocessable_entity to :unprocessable_content, and
+    # older Rack raises on the new name. Pick whichever the installed Rack knows.
+    def respondo_unprocessable_status
+      table = defined?(Rack::Utils::SYMBOL_TO_STATUS_CODE) ? Rack::Utils::SYMBOL_TO_STATUS_CODE : nil
+      return :unprocessable_entity if table && !table.key?(:unprocessable_content)
+      :unprocessable_content
+    end
+
+    # Picks the first status symbol the installed Rack knows (newest name first),
+    # or the plain numeric code if it knows none. Rack renames status symbols
+    # between versions (e.g. :payload_too_large -> :content_too_large in 3.1) and
+    # warns about / eventually removes the old names. Without Rack loaded the
+    # last (oldest) symbol is returned.
+    #   respondo_status(:content_too_large, :payload_too_large, 413)
+    def respondo_status(*candidates, code)
+      table = defined?(Rack::Utils::SYMBOL_TO_STATUS_CODE) ? Rack::Utils::SYMBOL_TO_STATUS_CODE : nil
+      return candidates.last if table.nil?
+
+      candidates.find { |sym| table.key?(sym) } || code
+    end
+
+    # The current request, or nil outside Rails / when none is available.
+    def respondo_request
+      respond_to?(:request, true) ? request : nil
+    end
+
+    def respondo_set_location_header(location)
+      if respond_to?(:response, true) && response.respond_to?(:set_header)
+        response.set_header("Location", location)
+      end
+    end
+
+    # Validates a redirect target: no control characters (header injection),
+    # and either a relative path or the current host unless allow_other_host.
+    def respondo_safe_location!(location, allow_other_host)
+      str = location.to_s
+      raise UnsafeRedirectError, "Redirect location contains control characters" if str.match?(/[\x00-\x1f\x7f]/)
+      raise UnsafeRedirectError, "Redirect location is blank" if str.strip.empty?
+
+      # Browsers treat "//host" and "/\\host" as protocol-relative absolute URLs.
+      if str.start_with?("/")
+        return str unless str.start_with?("//", "/\\")
+        raise UnsafeRedirectError, "Protocol-relative redirect locations are not allowed" unless allow_other_host
+        return str
+      end
+
+      uri = begin
+        URI.parse(str)
+      rescue URI::InvalidURIError
+        raise UnsafeRedirectError, "Redirect location is not a valid URI"
+      end
+
+      unless %w[http https].include?(uri.scheme.to_s.downcase)
+        raise UnsafeRedirectError, "Redirect location must be http(s) or a relative path"
+      end
+
+      req = respondo_request
+      same_host = req.respond_to?(:host) && uri.host.to_s.casecmp?(req.host.to_s)
+      return str if same_host || allow_other_host
+
+      raise UnsafeRedirectError, "Redirect to another host requires allow_other_host: true"
     end
 
     # Normalize errors into a plain Hash regardless of source type.
