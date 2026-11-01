@@ -1,5 +1,52 @@
 # Changelog
 
+## [2.2.0] — Security hardening
+
+Fixes from an independent security assessment of 2.1.3. Upgrade notes are at the bottom.
+
+### Security
+- **Install generator code injection (CWE-94).** Keys entered for `default_meta` were written
+  unescaped into `config/initializers/respondo.rb`, which Rails executes on boot. Keys are now
+  validated (`/\A[a-z_][a-z0-9_]*\z/i`) and emitted through a safe literal. Project name is
+  single-lined. An existing initializer is backed up to `respondo.rb.bak` instead of silently overwritten.
+- **Excessive data exposure.** New `config.strict_serialization` raises
+  `Respondo::UnsafeSerializationError` when a raw ActiveRecord model/relation is passed without a
+  serializer; otherwise a one-time warning is logged per model class. README now leads with
+  allow-listed output.
+- **`meta` can no longer spoof `request_id` / `timestamp`.** They are applied after all
+  caller/default meta, string-keyed meta is normalised so no duplicate keys appear.
+- **Redirect helpers** accept `location:` and send a real `Location` header. Targets are limited
+  to relative paths / same host (`allow_other_host: true` to opt out); CR/LF, protocol-relative and
+  non-http(s) targets are rejected.
+- **Unbounded collections.** New `config.max_collection_size` (default `nil`, i.e. unchanged) raises
+  `Respondo::CollectionTooLargeError`; relations are capped in SQL with `LIMIT max+1`.
+- README `rescue_from` example no longer returns `e.message` to clients.
+
+### Fixed
+- `camelize_keys` no longer silently drops a value when two keys collapse to the same camelCase
+  name (`user_id` + `userId`); colliding keys are left unchanged.
+- `meta: nil` no longer raises `NoMethodError` in every code-setting helper.
+- Helpers no longer depend on ActiveSupport's `#try`, so manual inclusion outside Rails works.
+- `render_im_a_teapot` crashed on Rack 2.x ("Unrecognized status code :im_a_teapot", found by running a real Rails 6.1 app against every helper); it now falls back to the number 418 when Rack has no symbol for it.
+- Rack 3.1+ deprecation warnings: `render_payload_too_large` now uses `:content_too_large` when Rack knows it, and `render_not_extended` sends the number 510 (Rack deprecated the `:not_extended` symbol). Found by running the demo app on Rails 8.1.
+- `render_unprocessable` picks `:unprocessable_content` or `:unprocessable_entity` depending on the
+  installed Rack (older Rack rejects the new name).
+- Generator no longer uses Ruby 3-only endless method definitions.
+
+### Removed (breaking)
+- `render_continue`, `render_switching_protocols`, `render_processing`, `render_early_hints`.
+  1xx statuses are interim protocol responses; sending a JSON body with them can desync clients and
+  proxies. Use a normal 2xx helper, or Rails' `head`/`send_early_hints`.
+
+### Changed (breaking)
+- Caller-supplied `meta: { timestamp: ... }` is now ignored (the server timestamp always wins).
+
+### Upgrading from 2.x
+1. Replace any use of the four 1xx helpers.
+2. If you relied on overriding `meta[:timestamp]`/`meta[:request_id]`, put your value under a different key.
+3. Recommended: set `config.strict_serialization = true` and a `config.max_collection_size`.
+4. Redirect helpers: pass `location:` instead of `meta: { redirect_url: ... }`.
+
 ## [2.1.3] — Docs & Dependency Updates
 
 ### Changed
