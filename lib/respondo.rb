@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "respondo/version"
+require_relative "respondo/errors"
 require_relative "respondo/configuration"
 require_relative "respondo/serializer"
 # require_relative "respondo/pagination"

@@ -25,16 +25,19 @@ module Respondo
 
       # 2. ActiveRecord::Relation or any object with #map (lazy collections)
       if ar_relation?(object)
-        return object.map { |record| serialize_record(record) }
+        guard_raw_record!(object)
+        return load_relation(object).map { |record| serialize_record(record) }
       end
 
       # 3. Array — recurse
       if object.is_a?(Array)
+        enforce_collection_limit!(object.size)
         return object.map { |item| call(item) }
       end
 
       # 4. ActiveRecord model instance
       if ar_model?(object)
+        guard_raw_record!(object)
         return serialize_record(object)
       end
 
@@ -65,6 +68,49 @@ module Respondo
 
       # 10. Primitive — return as-is
       object
+    end
+
+    def load_relation(relation)
+      max = Respondo.config.max_collection_size
+      return relation unless max
+
+      records = relation.respond_to?(:limit) ? relation.limit(max + 1).to_a : relation.to_a
+      enforce_collection_limit!(records.size)
+      records
+    end
+
+    def enforce_collection_limit!(size)
+      max = Respondo.config.max_collection_size
+      return unless max && size > max
+
+      raise CollectionTooLargeError,
+            "Collection has more than #{max} items (config.max_collection_size)"
+    end
+
+    # Raw ActiveRecord objects expose every column through #as_json, including
+    # tokens and digests. Fail (strict) or warn once per class (default).
+    def guard_raw_record!(object)
+      klass = object.class
+
+      if Respondo.config.strict_serialization
+        raise UnsafeSerializationError,
+              "#{klass.name || klass} was passed as data: without a serializer. Set config.serializer " \
+              "or pass an explicit hash (e.g. record.as_json(only: [...]))."
+      end
+
+      label = klass.name || klass.to_s
+      @warned_classes ||= {}
+      return if @warned_classes[label]
+
+      @warned_classes[label] = true
+      message = "[Respondo] #{label} serialized with all attributes via #as_json. " \
+                "Configure config.serializer or pass `record.as_json(only: [...])` " \
+                "to avoid exposing sensitive columns (set config.strict_serialization = true to enforce)."
+      if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+        Rails.logger.warn(message)
+      else
+        Kernel.warn(message)
+      end
     end
 
     private
