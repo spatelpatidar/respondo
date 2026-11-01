@@ -215,10 +215,10 @@ RSpec.describe Respondo::ResponseBuilder do
       expect(result[:meta][:region]).to eq("us-east-1")
     end
 
-    it "caller meta overrides built-in timestamp when explicitly supplied" do
-      fixed = "2024-01-01T00:00:00Z"
-      result = build(success: true, meta: { timestamp: fixed })
-      expect(result[:meta][:timestamp]).to eq(fixed)
+    it "does NOT let caller meta overwrite the server-generated timestamp" do
+      result = build(success: true, meta: { timestamp: "1999-01-01T00:00:00Z" })
+      expect(result[:meta][:timestamp]).not_to eq("1999-01-01T00:00:00Z")
+      expect(Time.iso8601(result[:meta][:timestamp]).year).to be >= 2024
     end
 
     it "handles nil meta gracefully (treated as empty hash)" do
