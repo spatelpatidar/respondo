@@ -34,6 +34,17 @@ module Respondo
     #   config.default_meta = { api_version: "v1", platform: "mobile" }
     attr_accessor :default_meta
 
+    # When true, passing a raw ActiveRecord model/relation as `data:` without a
+    # custom `config.serializer` raises Respondo::UnsafeSerializationError
+    # instead of emitting every column via #as_json. Recommended for production.
+    # When false (default) a one-time warning is logged per model class.
+    attr_accessor :strict_serialization
+
+    # Maximum number of records/elements a collection may contain when it is
+    # serialized. Larger collections raise Respondo::CollectionTooLargeError
+    # instead of loading everything into memory. nil (default) = no limit.
+    attr_accessor :max_collection_size
+
     def initialize
       @default_success_message = "Success"
       @default_error_message   = "An error occurred"
@@ -41,6 +52,8 @@ module Respondo
       @camelize_keys           = false
       @serializer              = nil
       @default_meta            = {}  # e.g. { api_version: "v1", env: "production" }
+      @strict_serialization    = false
+      @max_collection_size     = nil
     end
   end
 end

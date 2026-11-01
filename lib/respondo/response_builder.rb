@@ -33,7 +33,7 @@ module Respondo
       @success    = success
       @raw_data   = data
       @message    = message
-      @extra_meta = meta || {}
+      @extra_meta = normalize_meta(meta)
       @errors     = errors
       @pagination = pagination
       @request    = request
@@ -71,30 +71,47 @@ module Respondo
     def build_meta
       meta = {}
 
+      # Server-generated fields. These are computed up front, keep their
+      # position at the top of the meta block, and are re-applied after every
+      # caller-controlled merge below so caller input can never overwrite them.
       # 1. Request ID first (opt-in, always authoritative)
+      authoritative = {}
       if Respondo.config.include_request_id && @request&.respond_to?(:request_id)
-        meta[:request_id] = @request.request_id
+        authoritative[:request_id] = @request.request_id
       end
 
       # 2. Timestamp second
-      meta[:timestamp] = current_timestamp
+      authoritative[:timestamp] = current_timestamp
+      meta.merge!(authoritative)
 
-      # 3. Global defaults in the middle (lowest priority)
-      meta.merge!(Respondo.config.default_meta)
+      # 3. Global defaults (lowest priority of the caller-controlled sources)
+      meta.merge!(normalize_meta(Respondo.config.default_meta))
 
-      # 4. Caller-supplied meta (overrides defaults)
+      # 4. Caller-supplied meta (overrides defaults, but not authoritative fields)
       meta.merge!(@extra_meta)
 
       # 5. Pagination — plain hash from the caller, placed last before code/status
       meta[:pagination] = @pagination if @pagination.is_a?(Hash) && !@pagination.empty?
 
       # 6. Re-pin code and status to the very end
+      # Re-assert authoritative fields (Hash#merge! keeps original key order)
+      meta.merge!(authoritative)
+      # Re-pin code and status to the very end
       code   = meta.delete(:code)
       status = meta.delete(:status)
       meta[:code]   = code   if code
       meta[:status] = status if status
 
       meta
+    end
+
+    # Accepts nil / Hash / anything responding to #to_h and returns a Hash with
+    # Symbol keys, so { "request_id" => "x" } cannot sneak past the symbol-keyed
+    # authoritative fields as a duplicate key.
+    def normalize_meta(meta)
+      return {} if meta.nil?
+      hash = meta.respond_to?(:to_h) ? meta.to_h : {}
+      hash.each_with_object({}) { |(k, v), memo| memo[k.respond_to?(:to_sym) ? k.to_sym : k] = v }
     end
 
     def current_timestamp
@@ -110,11 +127,19 @@ module Respondo
       camelize_hash(hash)
     end
 
+    # Recursively camelizes hash keys. If two different keys in the same hash
+    # would collapse to the same camelized key (e.g. "user_id" and "userId"),
+    # the colliding keys are left exactly as they were so no value is silently
+    # overwritten.
     def camelize_hash(obj)
       case obj
       when Hash
-        obj.each_with_object({}) do |(k, v), memo|
-          memo[camelize_key(k)] = camelize_hash(v)
+        targets = obj.keys.map { |k| camelize_key(k) }
+        counts  = targets.tally
+
+        obj.each_with_object({}).with_index do |((k, v), memo), i|
+          new_key = counts[targets[i]] > 1 ? k : targets[i]
+          memo[new_key] = camelize_hash(v)
         end
       when Array
         obj.map { |item| camelize_hash(item) }
