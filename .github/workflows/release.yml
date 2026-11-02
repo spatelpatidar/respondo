@@ -1,28 +1,49 @@
 name: Release
 
-# Creates a GitHub Release with the built .gem file attached when a version tag
-# is pushed. It does NOT publish to RubyGems: push the gem manually from your
-# machine with `gem push respondo-X.Y.Z.gem`.
-#
-# Usage:
-#   git tag v3.0.0
-#   git push origin v3.0.0
+# Automatic: runs after the "CI" workflow finishes successfully on a push to main,
+#            then releases the version in lib/respondo/version.rb
+#            (skipped if the tag for that version already exists).
+# Manual:    Actions -> Release -> Run workflow. Tick "recreate" to delete the
+#            existing tag + release for this version and create them again.
+# Does NOT publish to RubyGems: run `gem push respondo-X.Y.Z.gem` yourself.
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows: ["CI"]          # must match the `name:` in ci.yml exactly
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      recreate:
+        description: "Delete the existing tag/release for this version and create it again"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
-  github-release:
-    runs-on: ubuntu-latest
+  release:
+    name: Tag and release
+    # Automatic runs only when CI passed on a push to main; manual runs always allowed
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-26.04
     permissions:
-      contents: write   # needed to create the GitHub Release
+      contents: write   # create/delete tags and releases
+    env:
+      GH_TOKEN: ${{ github.token }}
+      # The commit CI actually tested (workflow_run) or the selected commit (manual)
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
 
       - uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
@@ -30,26 +51,47 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
 
-      - name: Tag must match lib/respondo/version.rb
+      - name: Decide what to do
+        id: plan
+        env:
+          RECREATE: ${{ inputs.recreate }}
         run: |
           version="$(ruby -r ./lib/respondo/version -e 'puts Respondo::VERSION')"
-          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
-            echo "Tag ${GITHUB_REF_NAME} does not match version v${version}" >&2
-            exit 1
-          fi
-          echo "VERSION=${version}" >> "$GITHUB_ENV"
+          tag="v${version}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
-      - name: Run the test suite
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" >/dev/null 2>&1; then
+            if [ "${RECREATE}" = "true" ]; then
+              echo "Tag ${tag} exists: recreating as requested"
+              gh release delete "${tag}" --yes 2>/dev/null || true
+              gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/tags/${tag}"
+              echo "release=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "Tag ${tag} already exists: nothing to release (bump version.rb to release a new version)"
+              echo "release=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "Tag ${tag} does not exist yet: releasing"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # CI already ran the full test matrix, so only re-test on manual runs
+      - name: Run the test suite (manual runs only)
+        if: steps.plan.outputs.release == 'true' && github.event_name == 'workflow_dispatch'
         run: bundle exec rspec
 
       - name: Build the gem
+        if: steps.plan.outputs.release == 'true'
         run: gem build respondo.gemspec
 
-      - name: Create GitHub Release with the gem attached
+      - name: Create tag and GitHub Release with the gem attached
+        if: steps.plan.outputs.release == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.plan.outputs.tag }}
+          VERSION: ${{ steps.plan.outputs.version }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" "respondo-${VERSION}.gem" \
+          gh release create "${TAG}" "respondo-${VERSION}.gem" \
+            --target "${RELEASE_SHA}" \
             --title "respondo ${VERSION}" \
-            --generate-notes \
-            --verify-tag
+            --generate-notes
