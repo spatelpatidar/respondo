@@ -19,7 +19,7 @@ jobs:
   # ── Linux: every Ruby version, one after another ──────────────────────────
   linux-ruby-3-2:
     name: Linux · Ruby 3.2
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/rspec
@@ -29,7 +29,7 @@ jobs:
   linux-ruby-3-3:
     name: Linux · Ruby 3.3
     needs: linux-ruby-3-2
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/rspec
@@ -39,7 +39,7 @@ jobs:
   linux-ruby-3-4:
     name: Linux · Ruby 3.4
     needs: linux-ruby-3-3
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/rspec
@@ -71,7 +71,7 @@ jobs:
   build:
     name: Build gem
     needs: [windows-ruby-3-4, macos-ruby-3-4]   # starts only after every spec job passes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -89,7 +89,7 @@ jobs:
   sonar:
     name: SonarQube analysis
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -123,7 +123,7 @@ jobs:
       - macos-ruby-3-4
       - build
       - sonar
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Fail if any job failed, was skipped or was cancelled
         if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
