@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.2.0] — Security hardening
+## [2.2.0.beta1] — Security hardening
 
 Fixes from an independent security assessment of 2.1.3. Upgrade notes are at the bottom.
 
