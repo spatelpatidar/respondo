@@ -5,9 +5,14 @@ name: Release
 #            - 3.1.0.beta1 / 3.1.0.rc1  -> GitHub "Pre-release"
 #            - 3.1.0                    -> normal (latest) release
 #            Release notes come from the matching section in CHANGELOG.md.
-#            (skipped if the tag for that version already exists).
+#            (tag/release is skipped if the tag for that version already exists).
+#            A separate "package" job then pushes the gem to GitHub Packages
+#            (the repo's "Packages" sidebar), but only if that exact version
+#            is not already published there.
 # Manual:    Actions -> Release -> Run workflow. Tick "recreate" to delete the
 #            existing tag + release for this version and create them again.
+#            The package job still skips if the version is already in Packages
+#            (GitHub Packages never allows re-pushing a version).
 # Does NOT publish to RubyGems: run `gem push respondo-X.Y.Z.gem` yourself.
 on:
   workflow_run:
@@ -161,3 +166,62 @@ jobs:
             --title "${title}" \
             --notes-file "${RUNNER_TEMP}/release_notes.md" \
             ${channel_flags}
+  # Pushes ONLY to GitHub Packages (rubygems.pkg.github.com), never to rubygems.org.
+  # Runs after the release job (even if it skipped the release because the tag exists)
+  # and publishes only when this exact version is not already in the registry.
+  package:
+    name: Publish to GitHub Packages
+    needs: release
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      packages: write       # read existing versions and push the gem
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Check if this version is already in GitHub Packages
+        id: check
+        run: |
+          gem_version="$(ruby -r ./lib/respondo/version -e 'puts Gem::Version.new(Respondo::VERSION).to_s')"
+          echo "gem_version=${gem_version}" >> "$GITHUB_OUTPUT"
+
+          # Package not created yet -> API returns 404 -> empty list -> publish
+          existing="$(gh api --paginate "users/${OWNER}/packages/rubygems/respondo/versions" --jq '.[].name' 2>/dev/null || true)"
+
+          if printf '%s\n' "${existing}" | grep -Fxq "${gem_version}"; then
+            echo "respondo ${gem_version} is already in GitHub Packages: skipping"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "respondo ${gem_version} is not in GitHub Packages yet: publishing"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build the gem
+        if: steps.check.outputs.publish == 'true'
+        run: gem build respondo.gemspec
+
+      - name: Publish gem to GitHub Packages
+        if: steps.check.outputs.publish == 'true'
+        env:
+          GEM_VERSION: ${{ steps.check.outputs.gem_version }}
+        run: |
+          mkdir -p ~/.gem
+          printf -- "---\n:github: Bearer %s\n" "${GH_TOKEN}" > ~/.gem/credentials
+          chmod 0600 ~/.gem/credentials
+
+          gem push "respondo-${GEM_VERSION}.gem" \
+            --key github \
+            --host "https://rubygems.pkg.github.com/${OWNER}"
+
+          rm -f ~/.gem/credentials
