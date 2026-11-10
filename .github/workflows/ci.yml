@@ -20,3 +20,18 @@ jobs:
     uses: spatelpatidar/ruby-ci-workflow/.github/workflows/ci.yml@v1
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Keeps the required check name "CI passed" exactly as it was before,
+  # so the ruleset does not need to change.
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: ci
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Fail unless the shared CI succeeded
+        env:
+          RESULT: ${{ needs.ci.result }}
+        run: |
+          echo "Shared CI result: ${RESULT}"
+          test "${RESULT}" = "success"
