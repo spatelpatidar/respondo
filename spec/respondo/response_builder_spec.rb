@@ -104,10 +104,17 @@ RSpec.describe Respondo::ResponseBuilder do
       expect(build(success: true, data: 42)[:data]).to eq(42)
     end
 
-    it "uses the custom serializer from config when set" do
+    it "uses the custom serializer from config for objects that need serializing" do
       Respondo.configure { |c| c.serializer = ->(_obj) { { custom: true } } }
-      result = build(success: true, data: { anything: 1 })
+      result = build(success: true, data: Struct.new(:id).new(1))
       expect(result[:data]).to eq({ custom: true })
+    end
+
+    it "does not run the custom serializer on an already-serialized Hash (serializable_hash)" do
+      Respondo.configure { |c| c.serializer = ->(_obj) { { custom: true } } }
+      hash = { data: { id: "1", type: :listing, attributes: { title: "Flat" } } }
+      result = build(success: true, data: hash)
+      expect(result[:data]).to eq(hash)
     end
   end
 

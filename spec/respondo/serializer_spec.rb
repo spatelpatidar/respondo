@@ -44,8 +44,9 @@ RSpec.describe Respondo::Serializer do
     end
 
     it "uses custom serializer when configured" do
-      Respondo.configure { |c| c.serializer = ->(obj) { { wrapped: obj } } }
-      expect(described_class.call("test")).to eq({ wrapped: "test" })
+      model = Struct.new(:id).new(1)
+      Respondo.configure { |c| c.serializer = ->(obj) { { wrapped: obj.id } } }
+      expect(described_class.call(model)).to eq({ wrapped: 1 })
     end
 
     it "recursively serializes nested Hash values" do
@@ -169,5 +170,99 @@ RSpec.describe Respondo::Serializer do
     end
   end
 
+  # ---------------------------------------------------------------------------
+  # Developers bring their own serializer (jsonapi-serializer, fast_jsonapi,
+  # Blueprinter, AMS...). Respondo is only the response wrapper.
+  # ---------------------------------------------------------------------------
+  describe "pre-serialized data (e.g. serializable_hash)" do
+    let(:single) do
+      {
+        data: {
+          id: "7",
+          type: :listing,
+          attributes: { title: "Flat", price_cents: 1200, deleted_at: nil },
+          relationships: { owner: { data: { id: "3", type: :account } } }
+        }
+      }
+    end
 
+    let(:collection) do
+      { data: [single[:data], single[:data].merge(id: "8")], meta: { total: 2 } }
+    end
+
+    it "passes a serializable_hash through unchanged" do
+      expect(described_class.call(single)).to eq(single)
+    end
+
+    it "passes a serializable_hash collection through unchanged" do
+      expect(described_class.call(collection)).to eq(collection)
+    end
+
+    context "when config.serializer is set" do
+      before do
+        Respondo.configure { |c| c.serializer = ->(obj) { { id: obj.id } } }
+      end
+
+      it "does not send a Hash to the custom serializer" do
+        expect(described_class.call(single)).to eq(single)
+      end
+
+      it "does not send Hash values (strings, numbers, nil) to the custom serializer" do
+        expect(described_class.call({ total: 3, name: "x", empty: nil })).to eq({ total: 3, name: "x", empty: nil })
+      end
+
+      it "does not send an Array of Hashes to the custom serializer" do
+        expect(described_class.call([{ id: 1 }, { id: 2 }])).to eq([{ id: 1 }, { id: 2 }])
+      end
+
+      it "does not send scalars to the custom serializer" do
+        expect(described_class.call("hello")).to eq("hello")
+        expect(described_class.call(42)).to eq(42)
+      end
+
+      it "still sends models to the custom serializer, element by element inside an Array" do
+        model = Struct.new(:id)
+        expect(described_class.call([model.new(1), model.new(2)])).to eq([{ id: 1 }, { id: 2 }])
+      end
+
+      it "still sends a model nested in a Hash to the custom serializer" do
+        model = Struct.new(:id)
+        expect(described_class.call({ listing: model.new(1) })).to eq({ listing: { id: 1 } })
+      end
+    end
+
+    context "when a serializer instance is passed instead of its hash" do
+      let(:resource) { Struct.new(:id, :password_digest).new(1, "secret") }
+
+      let(:serializer_class) do
+        Class.new do
+          def initialize(resource) = @resource = resource
+          def serializable_hash = { data: { id: @resource.id.to_s } }
+          # Without #serializable_hash support this would dump @resource too.
+          def as_json(*) = { "resource" => @resource.to_h }
+        end
+      end
+
+      it "uses #serializable_hash instead of #as_json, so the wrapped record does not leak" do
+        result = described_class.call(serializer_class.new(resource))
+        expect(result).to eq({ data: { id: "1" } })
+        expect(result.to_s).not_to include("secret")
+      end
+
+      it "is not sent to config.serializer" do
+        Respondo.configure { |c| c.serializer = ->(_obj) { raise "must not be called" } }
+        expect(described_class.call(serializer_class.new(resource))).to eq({ data: { id: "1" } })
+      end
+    end
+
+    it "still enforces max_collection_size on arrays nested in a serializable_hash" do
+      Respondo.configure { |c| c.max_collection_size = 1 }
+      expect { described_class.call(collection) }.to raise_error(Respondo::CollectionTooLargeError)
+    end
+
+    it "works in strict_serialization mode" do
+      Respondo.configure { |c| c.strict_serialization = true }
+      expect(described_class.call(single)).to eq(single)
+    end
+  end
 end

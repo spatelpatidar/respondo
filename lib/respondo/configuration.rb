@@ -25,6 +25,12 @@ module Respondo
 
     # Custom serializer callable — receives (object) and must return a Hash.
     # Defaults to nil (built-in serialization strategy is used).
+    #
+    # It is only called for objects that still need converting (ActiveRecord
+    # models/relations and plain Ruby objects). Data that is already serialized
+    # — a Hash such as `MySerializer.new(record).serializable_hash`, an Array,
+    # a String/Number — is passed through untouched, so developers stay free to
+    # use their own serializer in a controller.
     # @example use ActiveModelSerializers
     #   config.serializer = ->(obj) { SomeSerializer.new(obj).as_json }
     attr_accessor :serializer
