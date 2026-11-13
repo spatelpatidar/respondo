@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.3.0] — Bring your own serializer
+
+### Fixed
+- **Developers can use their own serializer.** `render_ok(data: ListingSerializer.new(listing).serializable_hash)`
+  (jsonapi-serializer, fast_jsonapi, Blueprinter `render_as_hash`, AMS, plain hashes) is passed through
+  unchanged. Previously, when `config.serializer` was set it was called on every `data:` value, including
+  already-serialized Hashes, which raised or mangled the response.
+- Passing a serializer instance (`ListingSerializer.new(listing)`) now uses its `#serializable_hash`
+  instead of `#as_json`, which dumped the wrapped record's instance variables.
+
+### Changed (behaviour)
+- `config.serializer` is no longer called for `Hash`, `Array`, `Exception`, `ActiveModel::Errors` or
+  scalar values (String, Numeric, Symbol, true/false, Time, Date). It still receives ActiveRecord
+  models/relations and other objects.
+- An `Array` is serialized element by element, so with `config.serializer` set each model in the array
+  is passed to it individually instead of the whole array being passed once.
+
 ## [2.2.0] — Security hardening
 
 Fixes from an independent security assessment of 2.1.3. Upgrade notes are at the bottom.

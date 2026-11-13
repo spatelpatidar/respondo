@@ -199,9 +199,10 @@ Respondo automatically handles:
 | `ActiveRecord::Base` instance    | `record.as_json`                    |
 | `ActiveRecord::Relation`         | Array of `as_json` records          |
 | `ActiveModel::Errors`            | `{ field: ["message", ...] }`       |
-| `Hash`                           | Passed through (values serialized)  |
+| `Hash` (incl. `serializable_hash`) | Passed through (values serialized) |
 | `Array`                          | Each element serialized recursively |
 | `Exception`                      | `{ message: e.message }`            |
+| Serializer instance (responds to `#serializable_hash`, not ActiveRecord) | `.serializable_hash` |
 | Anything with `#as_json`         | `.as_json`                          |
 | Anything with `#to_h`            | `.to_h`                             |
 | Primitives (String, Integer...)  | As-is                               |
@@ -264,11 +265,42 @@ config.camelize_keys = true
 }
 ```
 
-### Custom serializer
+### Bring your own serializer
+
+Respondo is a response wrapper, not a serializer. Use whatever serializer your team already uses and
+hand Respondo the result. `jsonapi-serializer` / `fast_jsonapi`, Blueprinter, ActiveModelSerializers and
+plain hashes all work, and nothing in the output is changed:
+
+```ruby
+# jsonapi-serializer / fast_jsonapi
+render_ok(data: BxBlockBulkUploading::ListingSerializer.new(@listing).serializable_hash)
+render_ok(data: BxBlockBulkUploading::ListingSerializer.new(@listings).serializable_hash)
+
+# Blueprinter
+render_ok(data: ListingBlueprint.render_as_hash(@listing))
+
+# plain hash
+render_ok(data: @listing.as_json(only: %i[id title]))
+```
+
+Note that `serializable_hash` already returns `{ data: ... }`, so the response contains `data.data`.
+That is your serializer's own envelope, kept as-is.
+
+Passing the serializer instance itself (`ListingSerializer.new(@listing)`) also works: Respondo calls its
+`#serializable_hash`.
+
+### Custom serializer (optional, app-wide)
+
+If you would rather not call a serializer in every action, set one for raw models and relations:
 
 ```ruby
 config.serializer = ->(obj) { MySerializer.new(obj).as_json }
 ```
+
+`config.serializer` is only called for objects that still need converting (ActiveRecord models and
+relations, plain Ruby objects). It is never called for a `Hash`, `Array`, string/number or other
+already-serialized value, so it can be set globally without breaking `serializable_hash` output.
+An Array of models is serialized element by element.
 
 ---
 

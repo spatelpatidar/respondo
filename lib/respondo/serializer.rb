@@ -3,13 +3,23 @@
 module Respondo
   # Responsible for converting any Ruby object into a JSON-safe Hash or Array.
   #
+  # Respondo is a response *wrapper*: data that is already serialized (a Hash,
+  # an Array, a scalar, the output of `serializable_hash`) is passed through
+  # untouched, and `config.serializer` is only used for objects that still need
+  # converting (models, relations, plain Ruby objects).
+  #
   # Priority order:
-  #   1. Custom serializer from Respondo.config (if set)
-  #   2. ActiveRecord::Base / ActiveRecord::Relation
-  #   3. ActiveModel::Errors / objects responding to #errors
-  #   4. Objects responding to #as_json or #to_h
-  #   5. Arrays — each element is serialized recursively
-  #   6. Primitives — returned as-is
+  #   1. nil                        -> nil
+  #   2. Hash                       -> values serialized recursively (never sent to config.serializer)
+  #   3. Array                      -> each element serialized recursively
+  #   4. Scalars (String, Numeric, Symbol, true/false, Time, Date)
+  #   5. Exception / ActiveModel::Errors
+  #   6. Non-ActiveRecord objects that respond to #serializable_hash
+  #      (a jsonapi-serializer / fast_jsonapi / AMS serializer instance) -> #serializable_hash
+  #   7. Custom serializer from Respondo.config (if set)
+  #   8. ActiveRecord::Relation / ActiveRecord::Base (with the raw-record guard)
+  #   9. Objects responding to #as_json or #to_h
+  #  10. Anything else -> returned as-is
   module Serializer
     module_function
 
@@ -18,55 +28,54 @@ module Respondo
     def call(object)
       return nil if object.nil?
 
-      # 1. Custom serializer wins
+      # 1. Already-serialized data passes through. This is what lets
+      #    `ListingSerializer.new(listing).serializable_hash` work with any
+      #    serializer library, with or without config.serializer.
+      return serialize_hash(object)  if object.is_a?(Hash)
+      return serialize_array(object) if object.is_a?(Array)
+      return serialize_scalar(object) if scalar?(object)
+
+      # 2. Built-in handling for errors
+      return serialize_errors(object) if active_model_errors?(object)
+      return { message: object.message } if object.is_a?(Exception)
+
+      record_like = ar_relation?(object) || ar_model?(object)
+
+      # 3. A serializer instance (or any non-AR object that knows how to turn
+      #    itself into a Hash). Use its own output instead of #as_json, which
+      #    would dump instance variables (including the wrapped record).
+      if !record_like && self_serializing?(object)
+        return call(object.serializable_hash)
+      end
+
+      # 4. Custom serializer, for models and other objects that need converting
       if Respondo.config.serializer
         return Respondo.config.serializer.call(object)
       end
 
-      # 2. ActiveRecord::Relation or any object with #map (lazy collections)
+      # 5. ActiveRecord::Relation (lazy collection)
       if ar_relation?(object)
         guard_raw_record!(object)
         return load_relation(object).map { |record| serialize_record(record) }
       end
 
-      # 3. Array — recurse
-      if object.is_a?(Array)
-        enforce_collection_limit!(object.size)
-        return object.map { |item| call(item) }
-      end
-
-      # 4. ActiveRecord model instance
+      # 6. ActiveRecord model instance
       if ar_model?(object)
         guard_raw_record!(object)
         return serialize_record(object)
       end
 
-      # 5. ActiveModel::Errors object
-      if active_model_errors?(object)
-        return serialize_errors(object)
-      end
-
-      # 6. Exception / StandardError
-      if object.is_a?(Exception)
-        return { message: object.message }
-      end
-
-      # 7. Hash — recursively serialize values
-      if object.is_a?(Hash)
-        return object.transform_values { |v| call(v) }
-      end
-
-      # 8. Responds to #as_json (ActiveSupport)
+      # 7. Responds to #as_json (ActiveSupport)
       if object.respond_to?(:as_json)
         return object.as_json
       end
 
-      # 9. Responds to #to_h
+      # 8. Responds to #to_h
       if object.respond_to?(:to_h)
         return object.to_h
       end
 
-      # 10. Primitive — return as-is
+      # 9. Anything else — return as-is
       object
     end
 
@@ -116,6 +125,38 @@ module Respondo
     private
 
     module_function
+
+    def serialize_hash(hash)
+      hash.transform_values { |value| call(value) }
+    end
+
+    def serialize_array(array)
+      enforce_collection_limit!(array.size)
+      array.map { |item| call(item) }
+    end
+
+    # Values that are already JSON-ready. They must never reach
+    # config.serializer, otherwise every string/number inside a Hash would be
+    # handed to a model serializer.
+    def scalar?(object)
+      case object
+      when String, Symbol, Numeric, true, false, Time then true
+      else defined?(::Date) ? ::Date === object : false # Date and DateTime
+      end
+    end
+
+    # Keeps the previous behaviour for scalars: ActiveSupport turns Symbol,
+    # BigDecimal, Time, Date... into JSON-safe values via #as_json.
+    def serialize_scalar(object)
+      object.respond_to?(:as_json) ? object.as_json : object
+    end
+
+    # Detects a serializer instance (jsonapi-serializer, fast_jsonapi, AMS,
+    # ActiveModel::Serialization objects) without calling #respond_to? on the
+    # object, so it never triggers method_missing / strict test doubles.
+    def self_serializing?(object)
+      object.class.method_defined?(:serializable_hash)
+    end
 
     def ar_relation?(object)
       defined?(ActiveRecord::Relation) &&
