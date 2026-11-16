@@ -39,14 +39,14 @@ RSpec.describe "security hardening" do
 
     it "refuses the injection payload as a meta key and never writes it" do
       payload = 'a: nil }; puts "INJECTED_CODE_RAN"; { b=x'
-      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", payload, "ok=fine", "", "n")
+      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", payload, "ok=fine", "", "", "n")
 
       expect(initializer).not_to include("INJECTED_CODE_RAN")
       expect(initializer).to include('ok: "fine"')
     end
 
     it "rejects keys that are not plain identifiers (api-version, my key)" do
-      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", "api-version=1", "my key=2", "good=3", "", "n")
+      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", "api-version=1", "my key=2", "good=3", "", "", "n")
 
       expect(initializer).not_to include("api-version")
       expect(initializer).not_to include("my key")
@@ -54,7 +54,7 @@ RSpec.describe "security hardening" do
     end
 
     it "generates a file that parses as valid Ruby and defines no extra statements" do
-      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", 'x"; system("id"); "=1', "", "n")
+      run_with("y", "App", "v1", "OK", "Err", "n", "n", "y", 'x"; system("id"); "=1', "", "", "n")
 
       _out, status = Open3.capture2e("ruby", "-c", File.join(dest, "config", "initializers", "respondo.rb"))
       expect(status).to be_success
@@ -73,7 +73,7 @@ RSpec.describe "security hardening" do
 
       Dir.mktmpdir do |d|
         f = File.join(d, "i.rb")
-        File.write(f, "module Respondo; end\nmodule Respondo; def self.configure; yield Struct.new(:default_meta, :default_success_message, :default_error_message, :include_request_id, :camelize_keys, :strict_serialization, :max_collection_size).new; end; end\n" + content)
+        File.write(f, "module Respondo; end\nmodule Respondo; def self.configure; yield Struct.new(:default_meta, :default_success_message, :default_error_message, :include_request_id, :camelize_keys, :strict_serialization, :max_collection_size, :serializer_type, :jsonapi_include_type).new; end; end\n" + content)
         out, status = Open3.capture2e("ruby", f)
         expect(status).to be_success
         expect(out).not_to include("PWN")
@@ -85,7 +85,7 @@ RSpec.describe "security hardening" do
       FileUtils.mkdir_p(File.dirname(File.join(dest, "config", "initializers", "respondo.rb")))
       File.write(File.join(dest, "config", "initializers", "respondo.rb"), "# my custom config\n")
 
-      run_with("y", "App", "v1", "OK", "Err", "n", "n", "n", "n")
+      run_with("y", "App", "v1", "OK", "Err", "n", "n", "n", "", "n")
 
       expect(File.read(File.join(dest, "config", "initializers", "respondo.rb.bak"))).to eq("# my custom config\n")
     end

@@ -7,6 +7,19 @@ module Respondo
     class InstallGenerator < Rails::Generators::Base
       desc "Interactive setup — creates config/initializers/respondo.rb with your preferences."
 
+      class_option :serializer_type, type: :string, default: nil,
+                   desc: "Skip the serializer question: none, fast_jsonapi, jsonapi_serializer, blueprinter, ams or json"
+
+      # [type, label, gem name that auto-detects it from Gemfile.lock]
+      SERIALIZER_CHOICES = [
+        [:none,               "None / plain hashes (output passed through untouched)", nil],
+        [:fast_jsonapi,       "fast_jsonapi (Netflix, JSON:API)  -> flat data",        "fast_jsonapi"],
+        [:jsonapi_serializer, "jsonapi-serializer (JSON:API)     -> flat data",        "jsonapi-serializer"],
+        [:blueprinter,        "Blueprinter",                                           "blueprinter"],
+        [:ams,                "ActiveModelSerializers",                                "active_model_serializers"],
+        [:json,               "Plain JSON / as_json",                                  nil]
+      ].freeze
+
       # We bypass Thor's `say` entirely for all display output and use
       # $stdout.puts / print directly. This prevents Thor from re-echoing
       # buffered output and causing duplicate lines in the terminal.
@@ -37,6 +50,7 @@ module Respondo
         step_request_id
         step_camelize
         step_default_meta
+        step_serializer_type
         step_serializer
         step_security
 
@@ -135,6 +149,33 @@ module Respondo
         end
       end
 
+      def step_serializer_type
+        out section("Serializer Type")
+        out line("  Which serializer does this app use? Respondo shapes `data` to match.")
+        out line("  JSON:API serializers (fast_jsonapi, jsonapi-serializer) are flattened:")
+        out line(yellow('    data: { id: "1", name: "Alice" }   (links / included move to meta)'))
+        out line("  instead of the nested  data.data.attributes  document.")
+        out blank
+
+        if options[:serializer_type].to_s.strip != ""
+          @cfg[:serializer_type] = coerce_serializer_type(options[:serializer_type]) || :none
+          out line(green("  ✓  Using --serializer-type=#{@cfg[:serializer_type]}"))
+          return
+        end
+
+        detected = detect_serializer_type
+        SERIALIZER_CHOICES.each_with_index do |(type, label, _gem), i|
+          mark = type == detected ? green("  (detected in Gemfile.lock)") : ""
+          out line("    #{i + 1}) #{label}#{mark}")
+        end
+        out blank
+        out line(yellow("  Enter a number or a name, or press Enter to accept the default."))
+        default_index = SERIALIZER_CHOICES.index { |type, _, _| type == detected } + 1
+        raw = prompt_default(default_index.to_s)
+
+        @cfg[:serializer_type] = parse_serializer_choice(raw) || detected
+      end
+
       def step_serializer
         out section("Custom Serializer")
         out line("  By default Respondo serializes ActiveRecord models, collections,")
@@ -178,6 +219,7 @@ module Respondo
         summary_row "Error message",      @cfg[:default_error_message]
         summary_row "Include request_id", @cfg[:include_request_id]
         summary_row "Camelize keys",      @cfg[:camelize_keys]
+        summary_row "Serializer type",    @cfg[:serializer_type]
         summary_row "Custom serializer",  @cfg[:custom_serializer]
         summary_row "Strict serialization", @cfg[:strict_serialization]
         summary_row "Max collection size",  @cfg[:max_collection_size] || "no limit"
@@ -258,6 +300,13 @@ module Respondo
         b << "  # ── Key Format ───────────────────────────────────────────────────────"
         b << "  # CamelCase all JSON keys — recommended for Flutter / JS clients."
         b << "  config.camelize_keys = #{@cfg[:camelize_keys]}"
+        b << ""
+        b << "  # ── Serializer Type ──────────────────────────────────────────────────"
+        b << "  # Which serializer your controllers use. JSON:API types (:fast_jsonapi,"
+        b << "  # :jsonapi_serializer, :jsonapi) are flattened to data = { id, **attributes }"
+        b << "  # with links/included moved into meta. :none, :blueprinter, :ams and :json"
+        b << "  # pass through untouched. Pass serializer.serializable_hash as before."
+        b << "  config.serializer_type = #{(@cfg[:serializer_type] || :none).inspect}"
         b << ""
         b << "  # ── Security ─────────────────────────────────────────────────────────"
         b << "  # Raise Respondo::UnsafeSerializationError when a raw ActiveRecord model or"
@@ -358,6 +407,45 @@ module Respondo
         $stdout.flush
         answer = $stdin.gets.to_s.strip.downcase
         answer.empty? || answer.start_with?("y")
+      end
+
+      # Looks at Gemfile.lock for a known serializer gem; :none when nothing matches.
+      def detect_serializer_type
+        lock = File.join(destination_root, "Gemfile.lock")
+        return :none unless File.file?(lock)
+
+        text = File.read(lock)
+        SERIALIZER_CHOICES.each do |type, _label, gem_name|
+          next unless gem_name
+          return type if text.match?(/^\s{4}#{Regexp.escape(gem_name)} \(/)
+        end
+        :none
+      rescue SystemCallError
+        :none
+      end
+
+      # "2" -> :fast_jsonapi, "fast-jsonapi" -> :fast_jsonapi. nil when not understood.
+      def parse_serializer_choice(raw)
+        text = raw.to_s.strip
+        if text.match?(/\A\d+\z/)
+          entry = SERIALIZER_CHOICES[text.to_i - 1] if text.to_i.positive?
+          return entry&.first if entry
+
+          out line(yellow("    No option #{text} — using the default."))
+          return nil
+        end
+
+        coerce_serializer_type(text)
+      end
+
+      # Normalises a name through the same rules as Respondo.config.serializer_type=.
+      def coerce_serializer_type(value)
+        probe = Respondo::Configuration.new
+        probe.serializer_type = value
+        probe.serializer_type
+      rescue ArgumentError
+        out line(yellow("    Unknown serializer \"#{value}\" — using the default."))
+        nil
       end
 
       # "1000" / "1_000" / "1,000" -> 1000. Blank, "no limit", zero, negative or

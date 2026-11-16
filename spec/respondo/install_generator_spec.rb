@@ -99,8 +99,9 @@ RSpec.describe Respondo::Generators::InstallGenerator do
   #   6. request_id?      y
   #   7. camelize?        y
   #   8. add meta?        n
-  #   9. serializer?      n
-  HAPPY_ANSWERS = %w[y MyApp v2 OK Oops y y n n].freeze
+  #   9. serializer type  none   (menu: number or name, blank = detected default)
+  #  10. custom stub?     n
+  HAPPY_ANSWERS = %w[y MyApp v2 OK Oops y y n none n].freeze
 
   # -------------------------------------------------------------------------
   # Skip path
@@ -188,8 +189,9 @@ RSpec.describe Respondo::Generators::InstallGenerator do
     let(:content) { initializer_content(dest) }
     after         { FileUtils.rm_rf(dest) }
 
-    # ready=y, then blank for: name, version, success, error, n for rest
-    before { run_generator("y", "", "", "", "", "n", "n", "n", "n", dest: dest) }
+    # ready=y, then blank for: name, version, success, error; n, n, n for request_id/camelize/meta;
+    # blank for serializer type; n for the custom serializer stub
+    before { run_generator("y", "", "", "", "", "n", "n", "n", "", "n", dest: dest) }
 
     it "defaults success message to Success" do
       expect(content).to include('config.default_success_message = "Success"')
@@ -231,7 +233,8 @@ RSpec.describe Respondo::Generators::InstallGenerator do
           "platform=mobile", # first pair
           "env=production",  # second pair
           "",                # blank — stop
-          "n",               # serializer
+          "",                # serializer type (default)
+          "n",               # custom serializer stub
           dest: dest
         )
       end
@@ -250,7 +253,7 @@ RSpec.describe Respondo::Generators::InstallGenerator do
     end
 
     context "when user skips meta fields" do
-      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "n", dest: dest) }
+      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "", "n", dest: dest) }
 
       it "only includes api_version in default_meta" do
         expect(initializer_content(dest)).to include('api_version: "v1"')
@@ -269,6 +272,7 @@ RSpec.describe Respondo::Generators::InstallGenerator do
           "y",
           "badline",
           "key=val",
+          "",
           "",
           "n",
           dest: dest
@@ -294,7 +298,7 @@ RSpec.describe Respondo::Generators::InstallGenerator do
     after      { FileUtils.rm_rf(dest) }
 
     context "when user opts in" do
-      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "y", dest: dest) }
+      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "", "y", dest: dest) }
 
       it "writes a commented serializer config line" do
         expect(initializer_content(dest)).to include("config.serializer")
@@ -306,10 +310,10 @@ RSpec.describe Respondo::Generators::InstallGenerator do
     end
 
     context "when user opts out" do
-      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "n", dest: dest) }
+      before { run_generator("y", "App", "v1", "OK", "Err", "n", "n", "n", "", "n", dest: dest) }
 
-      it "does not write any serializer line" do
-        expect(initializer_content(dest)).not_to include("config.serializer")
+      it "does not write a config.serializer line" do
+        expect(initializer_content(dest)).not_to match(/^\s*config\.serializer\s*=/)
       end
     end
   end
@@ -352,6 +356,7 @@ RSpec.describe Respondo::Generators::InstallGenerator do
         "Request ID",
         "Key Format",
         "Global Meta Fields",
+        "Serializer Type",
         "Custom Serializer"
       ].each { |h| expect(output).to include(h) }
     end
@@ -381,7 +386,7 @@ RSpec.describe Respondo::Generators::InstallGenerator do
 
     it "overwrites the existing initializer without error" do
       run_generator(*HAPPY_ANSWERS, dest: dest)
-      run_generator("y", "NewApp", "v3", "Great", "Bad", "n", "n", "n", "n", dest: dest)
+      run_generator("y", "NewApp", "v3", "Great", "Bad", "n", "n", "n", "", "n", dest: dest)
 
       content = initializer_content(dest)
       expect(content).to include("# Respondo initializer — NewApp")
@@ -409,6 +414,86 @@ RSpec.describe Respondo::Generators::InstallGenerator do
 
       content = gen.send(:build_content)
       expect(content).to include("config.default_meta = {}")
+    end
+
+    it "falls back to serializer_type :none when @cfg has no serializer_type" do
+      gen = described_class.new([], {}, destination_root: dest)
+      gen.instance_variable_set(:@cfg, {
+        project_name: "TestApp", api_version: "v1", default_success_message: "Success",
+        default_error_message: "An error occurred", include_request_id: false,
+        camelize_keys: false, default_meta: {}, custom_serializer: false
+      })
+
+      expect(gen.send(:build_content)).to include("config.serializer_type = :none")
+    end
+  end
+
+  # -------------------------------------------------------------------------
+  # Serializer type question
+  # -------------------------------------------------------------------------
+
+  describe "serializer type" do
+    let(:dest) { Dir.mktmpdir("respondo_sertype_") }
+    after      { FileUtils.rm_rf(dest) }
+
+    # y, project, version, ok msg, err msg, request_id, camelize, extra meta, <serializer type>, custom stub
+    def answers_with(serializer)
+      ["y", "App", "v1", "OK", "Err", "n", "n", "n", serializer, "n"]
+    end
+
+    it "writes config.serializer_type for a menu number" do
+      run_generator(*answers_with("2"), dest: dest)
+      expect(initializer_content(dest)).to include("config.serializer_type = :fast_jsonapi")
+    end
+
+    it "accepts a name, including dashes" do
+      run_generator(*answers_with("jsonapi-serializer"), dest: dest)
+      expect(initializer_content(dest)).to include("config.serializer_type = :jsonapi_serializer")
+    end
+
+    it "defaults to :none when the answer is blank and no serializer gem is in Gemfile.lock" do
+      run_generator(*answers_with(""), dest: dest)
+      expect(initializer_content(dest)).to include("config.serializer_type = :none")
+    end
+
+    it "pre-selects the serializer found in Gemfile.lock" do
+      File.write(File.join(dest, "Gemfile.lock"), "GEM\n  specs:\n    fast_jsonapi (1.5)\n")
+      output = capture_run(*answers_with(""), dest: dest)
+
+      expect(output).to include("detected in Gemfile.lock")
+      expect(initializer_content(dest)).to include("config.serializer_type = :fast_jsonapi")
+    end
+
+    it "warns and falls back to the default for an unknown name" do
+      output = capture_run(*answers_with("bogus"), dest: dest)
+
+      expect(output).to include("Unknown serializer")
+      expect(initializer_content(dest)).to include("config.serializer_type = :none")
+    end
+
+    it "warns and falls back to the default for an out-of-range number" do
+      output = capture_run(*answers_with("9"), dest: dest)
+      expect(output).to include("No option 9")
+    end
+
+    it "skips the question when --serializer-type is given" do
+      input = %w[y App v1 OK Err n n n n].join("\n") + "\n" # no serializer answer
+      old_in, old_out = $stdin, $stdout
+      $stdin  = StringIO.new(input)
+      $stdout = StringIO.new
+      described_class.new([], { serializer_type: "blueprinter" }, destination_root: dest).run_interactive_setup
+      output = $stdout.string
+      $stdin, $stdout = old_in, old_out
+
+      expect(output).to include("--serializer-type=blueprinter")
+      expect(initializer_content(dest)).to include("config.serializer_type = :blueprinter")
+    end
+
+    it "generates an initializer that Respondo can load" do
+      run_generator(*answers_with("fast_jsonapi"), dest: dest)
+      load initializer_path(dest)
+
+      expect(Respondo.config.serializer_type).to eq(:fast_jsonapi)
     end
   end
 end
