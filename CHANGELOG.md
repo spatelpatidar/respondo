@@ -2,6 +2,25 @@
 
 ## [2.3.0] — Bring your own serializer
 
+### Added
+- **`config.serializer_type`** (`:none` default, `:fast_jsonapi`, `:jsonapi`, `:jsonapi_serializer`,
+  `:blueprinter`, `:ams`, `:active_model_serializers`, `:json`). With a JSON:API type,
+  `render_ok(data: Serializer.new(record).serializable_hash)` returns flat `data`
+  (`{ id, **attributes }` or an Array) instead of `data.data.attributes`; the document's `links`,
+  `included` and `meta` move into the response `meta`. Controllers keep passing `.serializable_hash`
+  unchanged. Opt-in: the default keeps the plain pass-through behaviour. Names are normalised
+  (case, `-` to `_`); an unknown type raises `ArgumentError`.
+- `config.jsonapi_include_type` (default `false`) keeps `type` on flattened resources.
+- `Respondo::SerializerAdapters` (called from `ResponseBuilder#build`). Lifted meta is merged after
+  `default_meta` and before caller `meta:`; `request_id` and `timestamp` stay authoritative.
+- `rails generate respondo:install` now asks which serializer you use (pre-selected from `Gemfile.lock`)
+  and writes `config.serializer_type` into the initializer. Non-interactive:
+  `--serializer-type=fast_jsonapi`.
+
+Limits: `relationships` are not copied into the flat resource (list foreign keys as attributes); a
+JSON:API document nested inside a larger hash is flattened in place but its own `links` / `included`
+are dropped; error responses are unaffected.
+
 ### Fixed
 - **Developers can use their own serializer.** `render_ok(data: ListingSerializer.new(listing).serializable_hash)`
   (jsonapi-serializer, fast_jsonapi, Blueprinter `render_as_hash`, AMS, plain hashes) is passed through
