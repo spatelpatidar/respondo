@@ -41,11 +41,15 @@ module Respondo
 
     # @return [Hash] the complete response payload
     def build
+      # Serialize first: with config.serializer_type = :fast_jsonapi (etc.) the JSON:API document
+      # is flattened here, and its links/included are handed to build_meta below.
+      data, @lifted_meta = SerializerAdapters.apply(serialize_data)
+
       # We initialize the hash in the exact order we want keys to appear
       payload = {
         success: @success,
         message: resolve_message,
-        data:    serialize_data,
+        data:    data,
       }
 
       # Add errors before meta if they exist
@@ -86,6 +90,9 @@ module Respondo
 
       # 3. Global defaults (lowest priority of the caller-controlled sources)
       meta.merge!(normalize_meta(Respondo.config.default_meta))
+
+      # 3b. links / included / document meta lifted out of a flattened JSON:API document
+      meta.merge!(normalize_meta(@lifted_meta))
 
       # 4. Caller-supplied meta (overrides defaults, but not authoritative fields)
       meta.merge!(@extra_meta)
